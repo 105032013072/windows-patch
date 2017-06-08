@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<variable name="PRODUCT_NAME" value="nontax" />
+	<variable name="VERSION_NUMBER" value="3.0" />
+	<variable name="EDITION" value="PE" />
+	<variable name="RUNNER_TYPE" value="install" />
+	<!-- 安装此产品需要的空间，以MB为单位 -->
+	<variable name="DISK_NEEDED" value="1024" />
+	<loadproperties srcfile="productinfo.properties" />
+	<renderer classname="com.bosssoft.platform.installer.wizard.gui.StepListRenderer" />
+
+	<steps firststep="01">
+		<step id="01" desc="Install Initialize">
+			<echo message="start install bosssoft gateway PE............" />
+			<if>
+				<equals arg1="${IS_SILENT_INSTALL}" arg2="true" />
+				<then>
+					<action name="silent installing init"
+						classname="com.bosssoft.platform.installer.wizard.action.SilentInit" />
+				</then>
+			</if>
+			<action name="init install"
+				classname="com.bosssoft.platform.installer.wizard.action.InstallerInitialize"
+				desc="Installer Initialize..." />
+			<echo message="INSTALL_ROOT ............${INSTALL_ROOT}" />
+			<action name="get temp dir" classname="com.bosssoft.platform.installer.wizard.action.GetTempDir"
+				desc="get temprary dir">
+				<parameter name="variable_key" value="TEMP_DIR" />
+			</action>
+			<echo message="tempdir == ${TEMP_DIR}" />
+			<nextstep default="011" />
+		</step>
+		<step id="011" desc="Temp Space Check">
+			<action name="check temp space" classname="com.bosssoft.platform.installer.wizard.action.CheckDiskSpace"
+				desc="Disk space is enough">
+				<parameter name="DIR" value="${TEMP_DIR}" />
+				<parameter name="SPACESIZE" value="200" />
+				<parameter name="VARIABLE_INDEX" value="TEMPSPACE_ENOUGH" />
+			</action>
+			<nextstep discriminator="${TEMPSPACE_ENOUGH}">
+				<branch id="true" stepid="02" />
+				<branch id="false" stepid="012" />
+			</nextstep>
+		</step>
+		<step id="012" desc="TempSpaceChoose">
+			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.TempSpaceChoosePanel"
+				controlpanel="com.bosssoft.platform.installer.wizard.gui.ConfirmCancelControlPanel"
+				render="false" />
+			<nextstep default="011" />
+		</step>
+		<step id="02" desc="Introduction">
+			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.IntroductionPanel" />
+			<nextstep default="03" />
+		</step>
+		
+		<step id="03" desc="Setbosssofthome">
+			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.BossHomeChoosePanel" />
+			<nextstep default="04" />
+		</step>
+		
+		<step id="04" desc="Installing" auto="true">
+			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel" />
+			<actionscall id="install" />
+			<nextstep default="05" />
+		</step>
+		<step id="05" desc="Finished">
+			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallFinishedPanel" />
+		</step>
+	</steps>
+
+	<actions id="install">
+		<!--加载补丁配置文件-->
+		<action name="init config" classname="com.bosssoft.install.windows.patch.action.InitConfig" scale="100">
+		</action>
+		
+	</actions>
+</project>
