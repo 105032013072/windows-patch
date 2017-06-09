@@ -36,14 +36,14 @@ public class InitConfig implements IAction{
 			Document doc= XmlUtil.getDocument(new File(patchConfig));
 			Elements prodcut = XmlUtil.findElements(doc, "product");
 			context.setValue("PRODUCT_NAME", prodcut.attr("name"));
+			InitProducConf(context);//加载该产品的安装版本信息
 			Iterator<Element> it=prodcut.select("app").iterator();
 			while(it.hasNext()){
 				Element appLabel=it.next();
-				PatchApp app=constructApp(appLabel);
+				PatchApp app=constructApp(appLabel,context);
 				list.add(app);
 			}
 			context.setValue("PATCH_APPS", list);
-			System.out.println("tets ");
 			
 		} catch (IOException e) {
 			throw new InstallException("faile to parser patch config "+patchConfig,e);
@@ -51,15 +51,38 @@ public class InitConfig implements IAction{
 		
 		
 	}
+  private void InitProducConf(IContext context) {
+		String filepath=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
+		File file=new File(filepath);
+		try{
+			Document doc= XmlUtil.getDocument(file);
+			Elements prodcut = XmlUtil.findElements(doc, "product");
+			String version=prodcut.select("version").text();
+			String installDir=prodcut.select("installDir").text();
+			String deployDir=prodcut.select("deployDir").text();
+			context.setValue("PRODUCT_VERSION", version);
+			context.setValue("PRODUCT_INSTALL_DIR", installDir);
+			context.setValue("APP_DEPLOY_DIR", deployDir);
+		}catch(Exception e){
+			throw new InstallException("cannot get the information of version about already installed product",e);
+		}
+		
+		
+	}
+
 /**
  * 构建需要更新的应用对象
  * @param appLabel
+ * @param context 
  * @return
  */
-	private PatchApp constructApp(Element appLabel) {
+	private PatchApp constructApp(Element appLabel, IContext context) {
+		PatchApp app=new PatchApp();
+		parserExitVersion(appLabel,context,app);//获取已安装版本信息
+		
 		//解析补丁文件信息
 		String appName=appLabel.attr("name");
-	    PatchApp app=new PatchApp();
+	    
 	    app.setAppName(appName);
 	    Iterator<Element> it =appLabel.children().iterator();
 	    while(it.hasNext()){
@@ -67,13 +90,15 @@ public class InitConfig implements IAction{
 			String tagName=r.tagName();
 			if("war".equals(tagName)){
 				WarType warType=new WarType();
+				warType.setIsInstalled(app.getIsInstalled());
 				warType.setName(r.attr("name"));
 				warType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attr("name"));
+				warType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+File.separator);
 				app.addPatchFile(warType);
 			}else{
 				ResourceType resourceType=new ResourceType();
 				resourceType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attr("name"));
-			    resourceType.setDestPath(r.attr("file")+File.separator+r.attr("name"));
+			    resourceType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+r.attr("file")+File.separator+r.attr("name"));
 			    app.addPatchFile(resourceType);
 			}
 		}
@@ -82,6 +107,30 @@ public class InitConfig implements IAction{
 	    return app;
 	    
 	}
+
+	private void parserExitVersion(Element appLabel, IContext context, PatchApp app) {
+	String filePath=context.getStringValue("BOSSSOFT_HOME")+File.separator+appLabel.attr("name")+File.separator+"version.xml";
+	File versionFile=new File(filePath);
+	if(!versionFile.exists()){//对应的版本信息文件不存在说明该应用是新增
+       app.setIsInstalled(false);
+       return;
+ 	}else{
+ 		app.setIsInstalled(true);
+ 	}
+	try{
+		Document doc = XmlUtil.getDocument(new File(filePath));
+		Element eleApp = XmlUtil.findElements(doc, "app").get(0);
+		String appVersion=eleApp.attr("version");
+		Element platform=eleApp.select("platform").get(0);
+		String platformName=platform.attr("name");
+		String platformVersion=platform.attr("version");
+		app.setExitAppInfo(appVersion, platformName, platformVersion);
+	    
+	}catch(Exception e){
+		throw new InstallException("cannot get the information of version about already installed product",e);
+	} 
+	
+}
 
 	public void rollback(IContext context, Map params) throws InstallException {
 		

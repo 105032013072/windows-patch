@@ -70,8 +70,22 @@
 
 	<actions id="install">
 		<!--加载补丁配置文件-->
-		<action name="init config" classname="com.bosssoft.install.windows.patch.action.InitConfig" scale="100">
+		<action name="init config" classname="com.bosssoft.install.windows.patch.action.InitConfig" scale="50">
 		</action>
 		
+		<!--更新检查-->
+		<action name="check update" classname="com.bosssoft.install.windows.patch.action.CheckUpdate" scale="50">
+		</action>
+		<!--更新检查通过才允许更新-->
+		<if>
+			<equals arg1="${IS_CAN_UPDATE}" arg2="true" />
+				<then>
+					<!--备份-->
+					<!--<action></action>-->
+					<!--更新-->
+					<action name="Update Product"
+						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
+			  </then>
+		</if>
 	</actions>
 </project>

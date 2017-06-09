@@ -12,7 +12,7 @@ public class PatchFileManager {
 	private static String getpatchHomePath() {
 		String path=null;
 		try {
-			path=Thread.currentThread().getContextClassLoader().getResource("/install").toURI().getPath();
+			path=Thread.currentThread().getContextClassLoader().getResource("install").toURI().getPath();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
