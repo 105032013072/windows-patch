@@ -1,0 +1,9 @@
+<product name="nontax" version="3.1">
+	 <app name="bosssoft-gateway" version="1.0.0">
+	   <platform name="Bosssoft platform" version="1.0.0"></platform>
+	 </app>
+	 
+	 <app name="cas-server" version="2.0.0">
+	 	<platform name="Bosssoft platform" version="1.0.0"></platform>
+	 </app>
+</product>

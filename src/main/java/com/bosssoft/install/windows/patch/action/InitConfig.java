@@ -60,9 +60,11 @@ public class InitConfig implements IAction{
 			String version=prodcut.select("version").text();
 			String installDir=prodcut.select("installDir").text();
 			String deployDir=prodcut.select("deployDir").text();
+			String serverPort=prodcut.select("serverPort").text();
 			context.setValue("PRODUCT_VERSION", version);
 			context.setValue("PRODUCT_INSTALL_DIR", installDir);
 			context.setValue("APP_DEPLOY_DIR", deployDir);
+			context.setValue("SERVER_PORT", serverPort);
 		}catch(Exception e){
 			throw new InstallException("cannot get the information of version about already installed product",e);
 		}

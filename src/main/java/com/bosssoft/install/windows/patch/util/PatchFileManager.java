@@ -4,12 +4,14 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 public class PatchFileManager {
-	private static String patchHome = getpatchHomePath();
+	private static String patchWordDir=setPatchWordDir();
+	private static String patchHome = setpatchHomePath();
 	private static String patchConfig=patchHome.concat("/resource_info.xml");
-    private static  String pathResourceDir=null;
+    private static String  pacthTemplateDir=null;
+	private static  String pathResourceDir=null;
     private static  String pathCheckDir=null;
 	
-	private static String getpatchHomePath() {
+	private static String setpatchHomePath() {
 		String path=null;
 		try {
 			path=Thread.currentThread().getContextClassLoader().getResource("install").toURI().getPath();
@@ -19,6 +21,17 @@ public class PatchFileManager {
 		return path;
 	}
 	
+	private static String setPatchWordDir() {
+		
+		String path=null;
+		try {
+			path=Thread.currentThread().getContextClassLoader().getResource("").toURI().getPath();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return path;
+	}
+
 	public static String getPathResourceDir(String appName){
 		return patchHome.concat(File.separator).concat(appName);
 	}
@@ -30,4 +43,14 @@ public class PatchFileManager {
 	public static String getPatchConfig() {
 		return patchConfig;
 	}
+
+	public static String getPacthTemplateDir() {
+		return patchWordDir.concat(File.separator).concat("template");
+	}
+
+	public static String getPatchHome() {
+		return patchHome;
+	}
+	
+	
 }
