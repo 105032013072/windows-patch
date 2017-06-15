@@ -21,7 +21,7 @@ import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
 import com.bosssoft.platform.installer.wizard.util.XmlUtil;
 
-public class InitConfig implements IAction{
+public class LoadConfig implements IAction{
 
 	transient Logger logger = Logger.getLogger(getClass());
 	public void execute(IContext context, Map params) throws InstallException {

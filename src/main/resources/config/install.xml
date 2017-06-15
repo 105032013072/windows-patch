@@ -70,7 +70,7 @@
 
 	<actions id="install">
 		<!--加载补丁配置文件-->
-		<action name="init config" classname="com.bosssoft.install.windows.patch.action.InitConfig" scale="50">
+		<action name="init config" classname="com.bosssoft.install.windows.patch.action.LoadConfig" scale="50">
 		</action>
 		
 		<!--更新检查-->
@@ -82,9 +82,12 @@
 				<then>
 					<!--备份-->
 					<!--<action></action>-->
-					<!--更新-->
+					<!--更新应用-->
 					<action name="Update Product"
 						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
+			        <!--更新版本信息-->
+			        <action name="Update Version"
+						classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
 			  </then>
 		</if>
 	</actions>

@@ -11,6 +11,7 @@ import com.bosssoft.platform.installer.io.operation.exception.OperationException
 public class ResourceType implements IType{
 	private String sourcePath;
 	private String destPath;
+	private Boolean isInstalled;
 
 	public void update(IContext context) {
 		if (this.sourcePath == null) {
@@ -25,6 +26,9 @@ public class ResourceType implements IType{
 			throw new InstallException("src " + sourcePath + " does not exist.");
 		}
 		
+		if(destFile.exists()) isInstalled=true;
+		else isInstalled=false;
+		
 		try {
 			FileUtils.copy(srcFile, destFile, null, FileOperationMessageListener.INSTANCE);
 		} catch (OperationException e) {
@@ -32,6 +36,11 @@ public class ResourceType implements IType{
 		}
 	}
 
+  public void record4Rollback(IContext context) {
+		
+		
+	}
+	
 	public String getSourcePath() {
 		return sourcePath;
 	}
@@ -47,6 +56,8 @@ public class ResourceType implements IType{
 	public void setDestPath(String destPath) {
 		this.destPath = destPath;
 	}
+
+	
 
 
 	

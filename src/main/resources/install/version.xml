@@ -1,9 +1,14 @@
-<product name="nontax" version="3.1">
+<!--若是产品的版本信息不更新，则去掉version属性-->
+<product name="nontax" version="3.0.1">
+	 <!--若是应用的版本信息不更新，则去掉version属性-->
 	 <app name="bosssoft-gateway" version="1.0.0">
+	 	<!--若是平台版本信息不更新，去掉<platform>标签-->
 	   <platform name="Bosssoft platform" version="1.0.0"></platform>
 	 </app>
 	 
-	 <app name="cas-server" version="2.0.0">
-	 	<platform name="Bosssoft platform" version="1.0.0"></platform>
+	  <app name="appframe-web">
+	 	<platform name="Bosssoft platform" version="1.0.1"></platform>
 	 </app>
+	 
+	 <app name="cas-server" version="2.0.0"></app>
 </product>

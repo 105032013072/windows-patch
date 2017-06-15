@@ -1,11 +1,13 @@
-package com.bosssoft.install.windows_patch;
+package com.bosssoft.install.windows.patch.action;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Iterator;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -15,40 +17,43 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
+import com.bosssoft.platform.installer.core.IContext;
+import com.bosssoft.platform.installer.core.InstallException;
+import com.bosssoft.platform.installer.core.action.IAction;
 
-public class VersionTest {
+public class UpdateVersion implements IAction{
+	transient Logger logger = Logger.getLogger(getClass());
 
-	public static void main(String[] args) {
-		String patchVersion=PatchFileManager.getPatchHome()+"/version.xml";
+	public void execute(IContext context, Map params) throws InstallException {
+		String patchVersion=PatchFileManager.getPatchHome()+File.separator+"version.xml";
 		try{
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(patchVersion);
 			Element product= document.getRootElement();
 			
 			if(product.attribute("version")!=null){//更新产品版本
-				updateProductVersion(product);
+				updateProductVersion(product,context);
 			}
 			//更新或者创建应用版本信息
 		Iterator<Element> it=product.elementIterator();
 		while(it.hasNext()){
 			Element appelement=it.next();
-			setAppVersion(appelement);
+			setAppVersion(appelement,context);
 		}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
 	}
 
-	private static void setAppVersion(Element appelement) {
-		String file="D:\\test\\boss_home"+File.separator+appelement.attributeValue("name")+File.separator+"version.xml";
+	private void setAppVersion(Element appelement, IContext context) {
+		String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+appelement.attributeValue("name")+File.separator+"version.xml";
 		if(new File(file).exists()) updateAppVersion(appelement,file);
 		else createAppVersion(appelement,file);
 		
 	}
 
 	//创建新应用的版本信息文件
-	private static void createAppVersion(Element appelement, String file) {
+	private void createAppVersion(Element appelement, String file) {
 		try{
 			BufferedWriter bw = new BufferedWriter (new OutputStreamWriter (new FileOutputStream(file)));
 			bw.write (appelement.asXML());
@@ -57,11 +62,10 @@ public class VersionTest {
 			e.printStackTrace();
 		} 
 		
-		
 	}
 
 	//修改应用版本信息
-	private static void updateAppVersion(Element appelement, String file) {
+	private void updateAppVersion(Element appelement, String file) {
 		try{
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(file);
@@ -90,13 +94,13 @@ public class VersionTest {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
-	private static void updateProductVersion(Element product) {
+	private void updateProductVersion(Element product, IContext context) {
+
 		try{
-			String file="D:\\test\\boss_home\\nontax_version.xml";
+			String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(file);
 	       Node n= document.selectSingleNode("product/version");
@@ -112,8 +116,12 @@ public class VersionTest {
 			e.printStackTrace();
 		}
 		
+	
+		
 	}
 
-	
-
+	public void rollback(IContext context, Map params) throws InstallException {
+		
+		
+	}
 }

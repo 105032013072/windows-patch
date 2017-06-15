@@ -121,6 +121,12 @@ public class WarType implements IType{
 		}
 		
 	}
+	
+   public void record4Rollback(IContext context) {
+		
+		
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -150,6 +156,7 @@ public class WarType implements IType{
 	public void setIsInstalled(Boolean isInstalled) {
 		this.isInstalled = isInstalled;
 	}
+	
 
 	
     
