@@ -17,6 +17,7 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
+import com.bosssoft.install.windows.patch.util.Recorder;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
@@ -62,6 +63,8 @@ public class UpdateVersion implements IAction{
 			e.printStackTrace();
 		} 
 		
+		Recorder.createFileLog(file);
+		
 	}
 
 	//修改应用版本信息
@@ -94,6 +97,8 @@ public class UpdateVersion implements IAction{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		
+		Recorder.editeFileLog(file);
 
 	}
 
@@ -112,11 +117,13 @@ public class UpdateVersion implements IAction{
 	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(file),format);
 		    xmlWriter.write(document);
 		    xmlWriter.close();
+		
+		    Recorder.editeFileLog(file);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		
-	
+	   
 		
 	}
 

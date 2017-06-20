@@ -49,23 +49,33 @@
 			<nextstep default="011" />
 		</step>
 		<step id="02" desc="Introduction">
+			<!--<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.IntroductionPanel" />-->
+			<gui setuppanel="com.bosssoft.install.windows.patch.gui.ChoosePanel" />
+			<nextstep discriminator="${IS_UPDATE}">
+				<branch id="true" stepid="03" />
+				<branch id="false" stepid="031" />
+			</nextstep>
+		</step>
+		
+		<step id="031" desc="Setbosssofthome">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.IntroductionPanel" />
-			<nextstep default="03" />
+		    <nextstep default="03" />
 		</step>
 		
 		<step id="03" desc="Setbosssofthome">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.BossHomeChoosePanel" />
-			<nextstep default="04" />
+		    <nextstep default="04" />
 		</step>
-		
 		<step id="04" desc="Installing" auto="true">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel" />
 			<actionscall id="install" />
 			<nextstep default="05" />
 		</step>
 		<step id="05" desc="Finished">
-			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallFinishedPanel" />
+			 <!--<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchFinishedPanel" /> -->
+		  <gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallFinishedPanel" />
 		</step>
+		
 	</steps>
 
 	<actions id="install">
@@ -81,13 +91,21 @@
 			<equals arg1="${IS_CAN_UPDATE}" arg2="true" />
 				<then>
 					<!--备份-->
-					<!--<action></action>-->
+					<action name="Backup Product"
+						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
+						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/nginx.conf,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
+						<parameter name="BACKUP_DIR"  value="D:/test/backup"/>
+					</action>
 					<!--更新应用-->
 					<action name="Update Product"
 						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
 			        <!--更新版本信息-->
 			        <action name="Update Version"
 						classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
+						
+					<!--完善更新-->
+					<action name="Update Version"
+						classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />
 			  </then>
 		</if>
 	</actions>

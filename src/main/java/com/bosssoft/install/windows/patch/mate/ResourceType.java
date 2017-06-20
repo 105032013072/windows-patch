@@ -2,6 +2,7 @@ package com.bosssoft.install.windows.patch.mate;
 
 import java.io.File;
 
+import com.bosssoft.install.windows.patch.util.Recorder;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.message.FileOperationMessageListener;
@@ -12,7 +13,8 @@ public class ResourceType implements IType{
 	private String sourcePath;
 	private String destPath;
 	private Boolean isInstalled;
-
+    private String appName;
+	
 	public void update(IContext context) {
 		if (this.sourcePath == null) {
 			throw new InstallException("The src attribute must be present.");
@@ -37,7 +39,10 @@ public class ResourceType implements IType{
 	}
 
   public void record4Rollback(IContext context) {
-		
+	  if(!isInstalled){
+			//记录删除该文件
+		  Recorder.rollbackDeleteFile(destPath);
+	   }
 		
 	}
 	
@@ -55,6 +60,22 @@ public class ResourceType implements IType{
 
 	public void setDestPath(String destPath) {
 		this.destPath = destPath;
+	}
+
+	public Boolean getIsInstalled() {
+		return isInstalled;
+	}
+
+	public void setIsInstalled(Boolean isInstalled) {
+		this.isInstalled = isInstalled;
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
 	}
 
 	

@@ -10,6 +10,7 @@ import org.apache.log4j.net.SyslogAppender;
 
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.install.windows.patch.util.PatchUtil;
+import com.bosssoft.install.windows.patch.util.Recorder;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.util.PathUtil;
@@ -17,6 +18,7 @@ import com.bosssoft.platform.installer.io.FileUtils;
 import com.bosssoft.platform.installer.io.operation.exception.OperationException;
 
 public class WarType implements IType{
+	private String appName;
 	private String name;
 	private String sourcePath;
 	private String destPath;
@@ -56,6 +58,9 @@ public class WarType implements IType{
 		String result=new StringBuffer(sourceContext).insert(index, add).toString();
 		
 		PatchUtil.writeToFile(result, sourceFile,"GBK");
+		
+		//记录修改
+		Recorder.editeFileLog(sourceFile);
 	}
 	private void configNginx(IContext context) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"nginx-1.13.0"+File.separator+"conf"+File.separator+"nginx.conf";
@@ -64,16 +69,17 @@ public class WarType implements IType{
 	    String tempContext=PatchUtil.readFile(tempPath);
 	    int index=sourceContent.indexOf("location",sourceContent.indexOf("server"));
 	    String port=context.getStringValue("SERVER_PORT");
-	    String tc=tempContext.replace("%app_name%", name.substring(0,name.indexOf(".war")))
+	    String tc=tempContext.replace("%app_name%", appName)
 	              .replace("%ip%","127.0.0.1")
 	              .replace("%port%", port)+System.lineSeparator();
 	    String result=(new StringBuffer(sourceContent).insert(index, tc)).toString();
 	    PatchUtil.writeToFile(result, sourceFile);
+	    //记录修改
+	    Recorder.editeFileLog(sourceFile);
 	    
 	    
 	}
 	private void copyToBossHome(IContext context) {
-		String appName=name.substring(0,name.indexOf(".war"));
 		String homePath=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName+File.separator+"conf";
 		File homedir=new File(homePath);
 		if(!homedir.exists())
@@ -86,7 +92,10 @@ public class WarType implements IType{
 				if(!file.isDirectory()&&file.getName().endsWith(".properties")){
 	                String fileName=file.getName();
 					String dest=fileName.substring(fileName.lastIndexOf("/")+1,fileName.length());
-					FileUtils.copy(file, new File(homedir+File.separator+dest), null, null);
+					File targetFile=new File(homedir+File.separator+dest);
+					FileUtils.copy(file, targetFile, null, null);
+					//记录操作
+					Recorder.copyFileLog(file.getPath(), targetFile.getPath());
 				}
 				
 			} catch (OperationException e) {
@@ -99,7 +108,6 @@ public class WarType implements IType{
 	 * @param context
 	 */
 	private void copyToSvr(IContext context) {
-		String appName=name.substring(0,name.indexOf(".war"));
 		File destAppDir = new File(destPath, appName);
 		File sourceFile=new File(sourcePath);
 		if(destAppDir.exists()){
@@ -120,10 +128,20 @@ public class WarType implements IType{
 			throw new InstallException(message);
 		}
 		
+		Recorder.unzipLog(sourceFile.getPath(), destPath);
 	}
 	
    public void record4Rollback(IContext context) {
-		
+		//新增的应用需要记录回滚时要删除的文件
+	   if(!isInstalled){
+			//记录删除应用服务器下的程序
+		   String path=destPath+File.separator+appName;
+		   Recorder.rollbackDeleteDir(path);
+		   
+		   //记录删除bosshome下的目录
+		   path=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName;
+		   Recorder.rollbackDeleteDir(path);
+	   }
 		
 	}
 	
@@ -156,8 +174,14 @@ public class WarType implements IType{
 	public void setIsInstalled(Boolean isInstalled) {
 		this.isInstalled = isInstalled;
 	}
+	public String getAppName() {
+		return appName;
+	}
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
 	
-
+    
 	
     
 	

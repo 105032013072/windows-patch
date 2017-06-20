@@ -1,0 +1,7 @@
+<backups location="">
+	<dir name="appframe-web" source="${APP_DEPLOY_DIR}/" dest="${BACKUP_DIR}/"/>
+	<file name="cas.css" source="${APP_DEPLOY_DIR}/" dest="${BACKUP_DIR}/"/>
+	<file name="version.xml" source="${BOSSSOFT_HOME}/cas-server/" dest="${BACKUP_DIR}/cas-server/"/>
+	<file name="nginx.conf" source="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/" dest="${BACKUP_DIR}/"/>
+	<file name="uninstall.bat" source="${PRODUCT_INSTALL_DIR}/" dest="${BACKUP_DIR}/"/>
+</backups>

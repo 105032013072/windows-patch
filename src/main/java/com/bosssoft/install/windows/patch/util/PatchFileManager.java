@@ -10,6 +10,7 @@ public class PatchFileManager {
     private static String  pacthTemplateDir=null;
 	private static  String pathResourceDir=null;
     private static  String pathCheckDir=null;
+    private static String patchRollBackFile=null;
 	
 	private static String setpatchHomePath() {
 		String path=null;
@@ -51,6 +52,15 @@ public class PatchFileManager {
 	public static String getPatchHome() {
 		return patchHome;
 	}
+
+	public static String getPatchWordDir() {
+		return patchWordDir;
+	}
+
+	public static String getPatchRollBackFile() {
+		return patchWordDir.concat(File.separator).concat("rollback").concat(File.separator).concat("rollback.xml");
+	}
+	
 	
 	
 }

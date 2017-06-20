@@ -96,11 +96,15 @@ public class LoadConfig implements IAction{
 				warType.setName(r.attr("name"));
 				warType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attr("name"));
 				warType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+File.separator);
+				warType.setAppName(appName);
 				app.addPatchFile(warType);
 			}else{
 				ResourceType resourceType=new ResourceType();
 				resourceType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attr("name"));
 			    resourceType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+r.attr("file")+File.separator+r.attr("name"));
+			   if(new File(resourceType.getDestPath()).exists()) resourceType.setIsInstalled(true);
+			   else resourceType.setIsInstalled(false);
+			    resourceType.setAppName(appName);
 			    app.addPatchFile(resourceType);
 			}
 		}

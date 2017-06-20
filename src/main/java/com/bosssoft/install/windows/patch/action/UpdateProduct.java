@@ -20,6 +20,7 @@ public class UpdateProduct implements IAction{
 			List<IType> patchFiles=patchApp.getPatchFiles();
 			for (IType iType : patchFiles) {
 				iType.update(context);
+				iType.record4Rollback(context);
 			}
 		}
 		
