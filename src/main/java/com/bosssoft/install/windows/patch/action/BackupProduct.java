@@ -33,7 +33,7 @@ public class BackupProduct implements IAction{
 		String buDir=params.get("BACKUP_DIR").toString();
 		createRollBackFile(buDir,context,params);//创建rollback.xml
 		//读取rollback.xml，执行备份
-		try{
+		/*try{
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(PatchFileManager.getPatchRollBackFile());
 			Element replace=document.getRootElement().element("replace");
@@ -44,7 +44,7 @@ public class BackupProduct implements IAction{
 			}
 		}catch(Exception e){
 			throw new InstallException("faild to Backup Product"+e);
-		}
+		}*/
 		
 	}
 

@@ -2,8 +2,10 @@ package com.bosssoft.install.windows.patch.action;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -42,11 +44,12 @@ public class UpdateVersion implements IAction{
 			setAppVersion(appelement,context);
 		}
 		}catch(Exception e){
-			e.printStackTrace();
+			rollback(context, params);
+			throw new InstallException(e);
 		}
 	}
 
-	private void setAppVersion(Element appelement, IContext context) {
+	private void setAppVersion(Element appelement, IContext context) throws Exception{
 		String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+appelement.attributeValue("name")+File.separator+"version.xml";
 		if(new File(file).exists()) updateAppVersion(appelement,file);
 		else createAppVersion(appelement,file);
@@ -68,8 +71,7 @@ public class UpdateVersion implements IAction{
 	}
 
 	//修改应用版本信息
-	private void updateAppVersion(Element appelement, String file) {
-		try{
+	private void updateAppVersion(Element appelement, String file)throws Exception {
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(file);
 			Element sourceApp=document.getRootElement();
@@ -93,18 +95,13 @@ public class UpdateVersion implements IAction{
 	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(file),format);
 		    xmlWriter.write(document);
 		    xmlWriter.close();
-			 
-		}catch(Exception e){
-			e.printStackTrace();
-		}
 		
 		Recorder.editeFileLog(file);
 
 	}
 
-	private void updateProductVersion(Element product, IContext context) {
+	private void updateProductVersion(Element product, IContext context) throws Exception{
 
-		try{
 			String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(file);
@@ -119,16 +116,18 @@ public class UpdateVersion implements IAction{
 		    xmlWriter.close();
 		
 		    Recorder.editeFileLog(file);
-		}catch(Exception e){
-			e.printStackTrace();
 		}
-		
-	   
-		
-	}
 
 	public void rollback(IContext context, Map params) throws InstallException {
-		
+		try {
+			Recorder.saveRollback();
+			
+			//执行回滚操作
+			RollBack rollBack=RollBack.class.newInstance();
+			rollBack.execute(context, params);
+		} catch (Exception e) {
+			throw new InstallException(e);
+		}
 		
 	}
 }

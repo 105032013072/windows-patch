@@ -24,7 +24,7 @@ public class WarType implements IType{
 	private String destPath;
 	 private Boolean isInstalled;
 
-	public void update(IContext context) {
+	public void update(IContext context) throws InstallException{
 		if(isInstalled)
 			copyToSvr(context);
 		else deploy(context);//部署新的war
@@ -131,7 +131,7 @@ public class WarType implements IType{
 		Recorder.unzipLog(sourceFile.getPath(), destPath);
 	}
 	
-   public void record4Rollback(IContext context) {
+   public void record4Rollback(IContext context) throws InstallException{
 		//新增的应用需要记录回滚时要删除的文件
 	   if(!isInstalled){
 			//记录删除应用服务器下的程序

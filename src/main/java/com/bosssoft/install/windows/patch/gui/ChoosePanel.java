@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.MessageFormat;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -15,6 +16,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.platform.installer.core.MainFrameController;
 import com.bosssoft.platform.installer.core.gui.AbstractControlPanel;
 import com.bosssoft.platform.installer.core.gui.AbstractSetupPanel;
@@ -63,7 +65,7 @@ public class ChoosePanel extends AbstractSetupPanel implements ActionListener {
 		this.rbtnUpdate.setOpaque(false);
 		this.rbtnUpdate.setBounds(new Rectangle(37, 100, 372, 25));
 		this.rbtnRollBack.setBounds(new Rectangle(37, 150, 372, 25));
-		this.rbtnRollBack.setSelected(true);
+		this.rbtnUpdate.setSelected(true);
 		this.rbtnRollBack.setText(I18nUtil.getString("CHOOSE.ROLLBACK"));
 		this.rbtnRollBack.setOpaque(false);
 		this.buttonGroup.add(this.rbtnUpdate);
@@ -99,16 +101,26 @@ public class ChoosePanel extends AbstractSetupPanel implements ActionListener {
 		controlPane.setButtonVisible("finish", false);
 		controlPane.setButtonVisible("help", false);
 		controlPane.setButtonVisible("previous", false);
-		/*if (this.rbtnUpdate.isSelected())
-			controlPane.setButtonEnabled("next", true);
+		if (this.rbtnUpdate.isSelected())
+			getContext().setValue("IS_UPDATE", true);
 		else
-			controlPane.setButtonEnabled("next", false);*/
+			getContext().setValue("IS_UPDATE", false);
 		controlPane = null;
 
 	}
 
+	//检查是否可回滚
 	public boolean checkInput() {
-		return true;
+		if(this.rbtnRollBack.isSelected()){
+			File rollBackFile=new File(PatchFileManager.getPatchRollBackFile());
+			if(rollBackFile.exists()) return true;
+			else{
+				String msg=I18nUtil.getString("CHOOSE.ERROR");
+				showError(MessageFormat.format(msg,null));
+				return false;
+			} 
+			
+		}else return true;
 	}
 
 	public String getNextBranchID() {

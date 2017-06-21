@@ -15,7 +15,7 @@ public class ResourceType implements IType{
 	private Boolean isInstalled;
     private String appName;
 	
-	public void update(IContext context) {
+	public void update(IContext context) throws InstallException{
 		if (this.sourcePath == null) {
 			throw new InstallException("The src attribute must be present.");
 		}
@@ -38,7 +38,7 @@ public class ResourceType implements IType{
 		}
 	}
 
-  public void record4Rollback(IContext context) {
+  public void record4Rollback(IContext context) throws InstallException{
 	  if(!isInstalled){
 			//记录删除该文件
 		  Recorder.rollbackDeleteFile(destPath);

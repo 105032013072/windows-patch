@@ -16,7 +16,11 @@ public class FinishedPatch implements IAction{
 	public void execute(IContext context, Map params) throws InstallException {
 		context.setValue("PATCH_LOG", Recorder.getPatchLog());
 		//创建回滚的操作文件
-		Recorder.saveRollback();
+		try {
+			Recorder.saveRollback();
+		} catch (Exception e) {
+			throw new InstallException(e);
+		}
 	   
 		
 	}

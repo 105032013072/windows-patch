@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.bosssoft.install.windows.patch.mate.IType;
 import com.bosssoft.install.windows.patch.mate.PatchApp;
+import com.bosssoft.install.windows.patch.util.Recorder;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
@@ -19,15 +20,27 @@ public class UpdateProduct implements IAction{
 		for (PatchApp patchApp : list) {
 			List<IType> patchFiles=patchApp.getPatchFiles();
 			for (IType iType : patchFiles) {
-				iType.update(context);
 				iType.record4Rollback(context);
+		        try {
+		        	iType.update(context);
+				} catch (Exception e) {
+					rollback(context, params);
+					throw new InstallException();
+				}
 			}
 		}
 		
 	}
 
 	public void rollback(IContext context, Map params) throws InstallException {
-		
-		
+		try {
+			Recorder.saveRollback();
+			
+			//执行回滚操作
+			RollBack rollBack=RollBack.class.newInstance();
+			rollBack.execute(context, params);
+		} catch (Exception e) {
+			throw new InstallException(e);
+		}
 	}
 }

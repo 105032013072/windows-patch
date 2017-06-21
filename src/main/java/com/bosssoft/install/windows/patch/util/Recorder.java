@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
@@ -56,8 +57,9 @@ public class Recorder {
     	delDirs.add(dirPath);
     }
     
-    public static void saveRollback(){
-    	try{
+    public static void saveRollback() throws Exception{
+    	    if(delDirs.size()==0&&delFiles.size()==0)return;
+    	
     		String path=PatchFileManager.getPatchRollBackFile();
         	File file=new File(path);
         	 Document doc=null;
@@ -92,9 +94,6 @@ public class Recorder {
 	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(path),format);
 		    xmlWriter.write(doc);
 		    xmlWriter.close();
-    	}catch(Exception e){
-    		throw new InstallException("faild to save roll back because "+e);
-    	} 
     	
     }
     
