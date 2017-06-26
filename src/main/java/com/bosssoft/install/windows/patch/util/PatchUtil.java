@@ -10,7 +10,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import com.bosssoft.platform.installer.core.InstallException;
+import com.bosssoft.platform.installer.core.MainFrameController;
+import com.bosssoft.platform.installer.core.util.I18nUtil;
 import com.bosssoft.platform.installer.io.FileUtils;
 
 public class PatchUtil {
@@ -65,5 +72,16 @@ public class PatchUtil {
 			} catch (IOException e) {
 				throw new InstallException("Failed to ConfigComponents", e);
 			}
+	}
+	
+	public static int showConfirmMessage(String msg, String title){
+		JPanel jpanel = new JPanel();
+		JTextArea textArea = new JTextArea(4, 40);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setText(msg);
+		textArea.setEditable(false);
+		jpanel.add(new JScrollPane(textArea));
+		return MainFrameController.showConfirmDialog(msg, title, JOptionPane.YES_NO_OPTION, 2);
 	}
 }

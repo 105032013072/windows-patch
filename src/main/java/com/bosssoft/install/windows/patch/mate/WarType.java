@@ -25,10 +25,12 @@ public class WarType implements IType{
 	 private Boolean isInstalled;
 
 	public void update(IContext context) throws InstallException{
-		if(isInstalled)
+		throw new InstallException();
+		
+		/*if(isInstalled)
 			copyToSvr(context);
 		else deploy(context);//部署新的war
-		
+*/		
 	}
 	private void deploy(IContext context) {
 		copyToSvr(context);//将war解压到应用服务器下

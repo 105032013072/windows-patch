@@ -50,7 +50,14 @@
 		</step>
 		<step id="02" desc="Choose">
 			<gui setuppanel="com.bosssoft.install.windows.patch.gui.ChoosePanel" />
-		<nextstep default="03" />
+		    <if>
+				<equals arg1="${IS_SILENT_INSTALL}" arg2="true" />
+				<then>
+					<action name="silent choose"
+						classname="com.bosssoft.install.windows.patch.action.SilentChoose" />
+				</then>
+		    </if>
+		   	<nextstep default="03" />
 		</step>
 		
 		<step id="03" desc="Setbosssofthome" 
@@ -104,8 +111,8 @@
 						<parameter name="BACKUP_DIR"  value="D:/test/backup"/>
 					</action>-->
 					<!--更新应用-->
-					<!--<action name="Update Product"
-						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />-->
+					<action name="Update Product"
+						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
 			        <!--更新版本信息-->
 			       <!--<action name="Update Version"
 						classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />-->

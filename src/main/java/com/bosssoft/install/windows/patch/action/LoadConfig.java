@@ -67,7 +67,8 @@ public class LoadConfig implements IAction{
 			context.setValue("APP_DEPLOY_DIR", deployDir);
 			context.setValue("SERVER_PORT", serverPort);
 		}catch(Exception e){
-			throw new InstallException("cannot get the information of version about already installed product",e);
+			String message="cannot get the information of version about already installed product,please make sure the external path is correct ";
+			throw new InstallException(message);
 		}
 		
 		

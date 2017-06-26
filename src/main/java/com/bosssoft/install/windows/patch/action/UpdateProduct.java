@@ -3,14 +3,23 @@ package com.bosssoft.install.windows.patch.action;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.apache.log4j.Logger;
 
 import com.bosssoft.install.windows.patch.mate.IType;
 import com.bosssoft.install.windows.patch.mate.PatchApp;
+import com.bosssoft.install.windows.patch.util.PatchUtil;
 import com.bosssoft.install.windows.patch.util.Recorder;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
+import com.bosssoft.platform.installer.core.MainFrameController;
 import com.bosssoft.platform.installer.core.action.IAction;
+import com.bosssoft.platform.installer.core.runtime.SwingRunner;
+import com.bosssoft.platform.installer.core.util.I18nUtil;
 
 public class UpdateProduct implements IAction{
 	transient Logger logger = Logger.getLogger(getClass());
@@ -24,8 +33,9 @@ public class UpdateProduct implements IAction{
 		        try {
 		        	iType.update(context);
 				} catch (Exception e) {
-					rollback(context, params);
-					throw new InstallException();
+					int i=PatchUtil.showConfirmMessage("是否进行回滚", "异常提示");
+		            System.out.println(i);
+					//rollback(context, params);
 				}
 			}
 		}

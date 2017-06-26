@@ -22,7 +22,7 @@ public class RollBack implements IAction{
 
 	public void execute(IContext context, Map params) throws InstallException {
 		System.out.println("执行回滚");
-	    try {
+	   try {
 	    	String path=PatchFileManager.getPatchRollBackFile();
 		    SAXReader reader=new SAXReader();
 		    Document doc=reader.read(new File(path));
