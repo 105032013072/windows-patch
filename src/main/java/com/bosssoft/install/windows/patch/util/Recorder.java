@@ -16,6 +16,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.bosssoft.install.windows.patch.mate.DelApp;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.util.I18nUtil;
 import com.bosssoft.platform.installer.wizard.action.SetXMLNodeValue;
@@ -23,32 +24,43 @@ import com.bosssoft.platform.installer.wizard.action.SetXMLNodeValue;
 public class Recorder {
    private static List<String> delFiles=new ArrayList<String>();
    private static List<String> delDirs=new ArrayList<String>();
+   private static List<DelApp> delApps=new ArrayList<DelApp>();
 	
     private static StringBuffer logbuffer=new StringBuffer("");
+    private static int i=1;
     
     public static void createFileLog(String filePath){
-    	String message=I18nUtil.getString("LOGGER_CREATE_FILE")+filePath;
+    	String message=(i++)+"."+I18nUtil.getString("LOGGER_CREATE_FILE")+filePath;
     	logbuffer.append(message);
     	logbuffer.append(System.lineSeparator());
     }
     
     public static void editeFileLog(String filePath){
-    	String message=I18nUtil.getString("LOGGER_EDITE_FILE")+filePath;
+    	String message=(i++)+"."+I18nUtil.getString("LOGGER_EDITE_FILE")+filePath;
     	logbuffer.append(message);
     	logbuffer.append(System.lineSeparator());
     }
     
     public static void unzipLog(String sourcePath,String destPath){
-    	String message=sourcePath+I18nUtil.getString("LOGGER_UNZIP")+destPath;
+    	String message=(i++)+"."+sourcePath+I18nUtil.getString("LOGGER_UNZIP")+destPath;
     	logbuffer.append(message);
     	logbuffer.append(System.lineSeparator());
     }
     
     public static void copyFileLog(String sourcePath,String destPath){
-    	String message=sourcePath+I18nUtil.getString("LOGGER_COPY")+destPath;
+    	String message=(i++)+"."+sourcePath+I18nUtil.getString("LOGGER_COPY")+destPath;
     	logbuffer.append(message);
     	logbuffer.append(System.lineSeparator());
     }
+    
+    public static void rollBackLog(Exception ex){
+    	String message=(i++)+"."+I18nUtil.getString("LOGGER_ROLLBACK_ONE")+ex.getMessage();
+        logbuffer.append(message);
+        logbuffer.append(System.lineSeparator());
+        logbuffer.append((i++)+"."+I18nUtil.getString("LOGGER_ROLLBACK_TWO"));
+        logbuffer.append(System.lineSeparator());
+    }
+    
     public static void  rollbackDeleteFile(String filePath){
     	delFiles.add(filePath);
     }
@@ -57,6 +69,10 @@ public class Recorder {
     	delDirs.add(dirPath);
     }
     
+    public static void rollbackDeleteApp(String appPath,String appName){
+    	DelApp app=new DelApp(appName, appPath);
+    	delApps.add(app);
+    }
     public static void saveRollback() throws Exception{
     	    if(delDirs.size()==0&&delFiles.size()==0)return;
     	
@@ -86,6 +102,12 @@ public class Recorder {
 				e.addAttribute("path", df);
 				delet.add(e);
         	}
+        	for (DelApp delApp : delApps) {
+        		Element e=DocumentHelper.createElement("app");
+        		e.addAttribute("path", delApp.getAppPath());
+        		e.addAttribute("appName", delApp.getAppName());
+				delet.add(e);
+			}
         	root.add(delet);
         	
         	OutputFormat format =OutputFormat.createPrettyPrint(); 

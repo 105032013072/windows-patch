@@ -79,8 +79,7 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 	public void beforePrevious() {
 	}
 
-	//设置不接受时：下一步按钮不可用        接收：下一步按钮可用
-   //读取许可证内容
+	
 	public void beforeShow() {
 		this.logLabel.setText(getLabelText());
 
@@ -92,7 +91,7 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		controlPane.setButtonVisible("previous", false);
 		controlPane.setDefaultButton("finish");
 		
-		this.txtLog.setText("更新成功");
+		this.txtLog.setText(getContext().getStringValue("PATCH_LOG"));
 	}
 
 	public boolean checkInput() {

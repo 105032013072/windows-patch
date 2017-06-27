@@ -25,12 +25,10 @@ public class WarType implements IType{
 	 private Boolean isInstalled;
 
 	public void update(IContext context) throws InstallException{
-		throw new InstallException();
 		
-		/*if(isInstalled)
+		if(isInstalled)
 			copyToSvr(context);
-		else deploy(context);//部署新的war
-*/		
+		else deploy(context);//部署新的war	
 	}
 	private void deploy(IContext context) {
 		copyToSvr(context);//将war解压到应用服务器下
@@ -138,7 +136,7 @@ public class WarType implements IType{
 	   if(!isInstalled){
 			//记录删除应用服务器下的程序
 		   String path=destPath+File.separator+appName;
-		   Recorder.rollbackDeleteDir(path);
+		   Recorder.rollbackDeleteApp(path, appName);
 		   
 		   //记录删除bosshome下的目录
 		   path=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName;

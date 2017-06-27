@@ -1,7 +1,9 @@
 <!--namekey's  chinese value in core\i18n\common_installer_zh_CN.properties-->
 <steps>
     <stepitem id="choose" namekey="STEP.CHOOSE" stepid="02"/>
-	<stepitem id="setup-bosssofthome" namekey="STEP.BOSSHOME" stepid="03"/>
-	<stepitem id="installing" namekey="STEP.INSTALLING" stepid="04"/>
-	<stepitem id="finished" namekey="STEP.INSTALLCOMPLETE" stepid="05"/>
+	<stepitem id="rollbackdigest" namekey="STEP.ROLLBACKDIGEST" stepid="03"/>
+	<stepitem id="setup-bosssofthome" namekey="STEP.BOSSHOME" stepid="04"/>
+	<stepitem id="installing" namekey="STEP.INSTALLING" stepid="05"/>
+	<stepitem id="rollback" namekey="STEP.ROLLBACK" stepid="051"/>
+	<stepitem id="finished" namekey="STEP.INSTALLCOMPLETE" stepid="06"/>
 </steps>

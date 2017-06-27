@@ -18,6 +18,7 @@ import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.MainFrameController;
 import com.bosssoft.platform.installer.core.action.IAction;
+import com.bosssoft.platform.installer.core.message.MessageManager;
 import com.bosssoft.platform.installer.core.runtime.SwingRunner;
 import com.bosssoft.platform.installer.core.util.I18nUtil;
 
@@ -33,19 +34,28 @@ public class UpdateProduct implements IAction{
 		        try {
 		        	iType.update(context);
 				} catch (Exception e) {
-					int i=PatchUtil.showConfirmMessage("是否进行回滚", "异常提示");
-		            System.out.println(i);
-					//rollback(context, params);
+					int i=PatchUtil.showConfirmMessage(I18nUtil.getString("ROLLBACK.INFO"), I18nUtil.getString("ROLLBACK.TITLE"));
+		            if(i==0){//回滚
+		            	MessageManager.syncSendMessage("正在回滚.........");
+		            	//rollback(context, params);
+		            	doFinish(e,context);
+		            }
+					
 				}
 			}
 		}
 		
 	}
 
+	private void doFinish(Exception e, IContext context) {
+	  Recorder.rollBackLog(e);//操作日志
+	  context.setValue("PATCH_LOG", Recorder.getPatchLog());
+	  context.setValue("IS_ROLLBACK", true);
+	}
+
 	public void rollback(IContext context, Map params) throws InstallException {
 		try {
-			Recorder.saveRollback();
-			
+			Recorder.saveRollback();//回滚信息写入rollback.xml
 			//执行回滚操作
 			RollBack rollBack=RollBack.class.newInstance();
 			rollBack.execute(context, params);
@@ -53,4 +63,5 @@ public class UpdateProduct implements IAction{
 			throw new InstallException(e);
 		}
 	}
+	
 }

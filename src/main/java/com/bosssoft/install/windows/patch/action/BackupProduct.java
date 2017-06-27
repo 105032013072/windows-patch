@@ -51,10 +51,6 @@ public class BackupProduct implements IAction{
 	private void createRollBackFile(String buDir, IContext context, Map params) {
 
 		List<PatchApp> list=(List<PatchApp>) context.getValue("PATCH_APPS");
-		List<IType> typeList=new ArrayList<IType>();
-		for (PatchApp patchApp : list) {
-			typeList.addAll(patchApp.getPatchFiles());
-		}
 		
 		try{
 			SAXReader reader=new SAXReader();
@@ -64,7 +60,7 @@ public class BackupProduct implements IAction{
 			
 			Element replaceEle=DocumentHelper.createElement("replace");
 			//根据补丁资源配置备份信息
-			addPatchResource(replaceEle,typeList,buDir);
+			addPatchResource(replaceEle,list,buDir,context);
 			
 			//根据install.xml中的设置的额外备份文件配置备份信息
 			addExtraFiles(replaceEle,params,buDir);
@@ -124,28 +120,19 @@ public class BackupProduct implements IAction{
 		
 	}
 
-	private void addPatchResource(Element replaceEle, List<IType> typeList, String buDir) {
-		for (IType iType : typeList) {
-			if(iType instanceof WarType){
-				WarType war=(WarType) iType;
-				if(war.getIsInstalled()){//旧的war升级，回滚时替换
-				  Element dire=DocumentHelper.createElement("dir");
-				  dire.addAttribute("dest", war.getDestPath()+File.separator+war.getAppName());
-				  dire.addAttribute("source", buDir+File.separator+war.getAppName());
-				  replaceEle.add(dire);
-				}
-			}else if(iType instanceof ResourceType){
-				ResourceType resource=(ResourceType) iType;
-				if(resource.getIsInstalled()){//旧文件升级，回滚时替换
-					Element fe=DocumentHelper.createElement("file");
-					String resourceName=new File(resource.getSourcePath()).getName();
-					fe.addAttribute("dest", resource.getDestPath());
-					fe.addAttribute("source",buDir+File.separator+resource.getAppName()+File.separator+resourceName);
-					replaceEle.add(fe);
-				}
+	private void addPatchResource(Element replaceEle, List<PatchApp> list, String buDir, IContext context) {
+		
+		for (PatchApp patchApp : list) {
+			if(patchApp.getIsInstalled()){
+				String dest=context.getStringValue("APP_DEPLOY_DIR")+File.separator+patchApp.getAppName();
+				String source=buDir+File.separator+patchApp.getAppName();
+				Element dire=DocumentHelper.createElement("app");
+				dire.addAttribute("appName", patchApp.getAppName());
+				dire.addAttribute("dest", dest);
+			    dire.addAttribute("source", source);
+				replaceEle.add(dire);
 			}
 		}
-		
 	}
 
 	private void doBackup(Element element) {
