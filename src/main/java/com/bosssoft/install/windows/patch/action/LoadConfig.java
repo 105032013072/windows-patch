@@ -25,7 +25,6 @@ public class LoadConfig implements IAction{
 
 	transient Logger logger = Logger.getLogger(getClass());
 	public void execute(IContext context, Map params) throws InstallException {
-	   logger.info("更新");
 		String patchConfig=PatchFileManager.getPatchConfig();
 	  parserConfig(context,patchConfig);	
 	}

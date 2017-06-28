@@ -11,7 +11,7 @@
 
 	<steps firststep="01">
 		<step id="01" desc="Install Initialize">
-			<echo message="start install bosssoft gateway PE............" />
+			<echo message="start run nontax pacth program" />
 			<if>
 				<equals arg1="${IS_SILENT_INSTALL}" arg2="true" />
 				<then>
@@ -68,30 +68,39 @@
 		
 		<step id="04" desc="Setbosssofthome" 
 			  interceptor="com.bosssoft.install.windows.patch.event.SetBossHomeInterceptor">
-			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.BossHomeChoosePanel" />
-		   <nextstep discriminator="${IS_UPDATE}">
-				<branch id="true" stepid="05" />
-				<branch id="false" stepid="051" />
+			<!--<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.BossHomeChoosePanel" />-->
+			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchBossHomePanel" />
+		   <nextstep default="05" />
+		</step>
+		
+		<step id="05" desc="ConfigDatasource"
+			  interceptor="com.bosssoft.install.windows.patch.event.SetBossHomeInterceptor">
+			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.ConfigDBPanel" />
+			<nextstep discriminator="${IS_UPDATE}">
+				<branch id="true" stepid="06" />
+				<branch id="false" stepid="061" />
 			</nextstep>
 		</step>
-		<step id="05" desc="Installing" auto="true">
+		
+		
+		<step id="06" desc="Installing" auto="true">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel" />
 			<actionscall id="install" />
-			<nextstep default="06" />
+			<nextstep default="07" />
 		</step>
 		
-		<step id="051" desc="rollback" auto="true">
+		<step id="061" desc="rollback" auto="true">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel"/>
 		    <actionscall id="rollback" />
-			<nextstep default="061" />
+			<nextstep default="071" />
 		</step>
 		
-		<step id="06" desc="Finished">
+		<step id="07" desc="Finished">
 			 <!--<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchFinishedPanel" /> -->
 		  <gui setuppanel="com.bosssoft.install.windows.patch.gui.UpdateFinishedPanel" />
 		</step>
 		
-		<step id="061" desc="Finished">
+		<step id="071" desc="Finished">
 			 <!--<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchFinishedPanel" /> -->
 		  <gui setuppanel="com.bosssoft.install.windows.patch.gui.RollbackFinishedPanel" />
 		</step>
@@ -99,10 +108,13 @@
 	</steps>
 
 	<actions id="install">
+		<echo message="updating product....." />
+		<echo message="loading update config...." />
 		<!--加载补丁配置文件-->
-		<action name="init config" classname="com.bosssoft.install.windows.patch.action.LoadConfig" scale="50">
+		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadConfig" scale="50">
 		</action>
 		
+		<echo message="checking update...." />
 		<!--更新检查-->
 		<action name="check update" classname="com.bosssoft.install.windows.patch.action.CheckUpdate" scale="50">
 		</action>
@@ -111,18 +123,24 @@
 			<equals arg1="${IS_CAN_UPDATE}" arg2="true" />
 				<then>
 					<!--备份-->
-					<action name="Backup Product"
+					<!--<action name="Backup Product"
 						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
 						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/nginx.conf,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
 						<parameter name="BACKUP_DIR"  value="D:/test/backup"/>
-					</action>
+					</action>-->
 					<!--更新应用-->
 					<action name="Update Product"
 						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
+			        
+			        
 			        <!--更新版本信息-->
 			       <action name="Update Version"
 						classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
-						
+						 
+				   <!--初始化应用配置（可选）-->
+				   <action name="Init App Config"
+						classname="com.bosssoft.install.windows.patch.action.InitAppConf" />
+						 
 					<!--完善更新-->
 					<action name="Update Version"
 						classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />
@@ -133,6 +151,6 @@
 	
 	<actions id="rollback">
 	  <action name="init config" classname="com.bosssoft.install.windows.patch.action.RollBack">
-		</action>
+	  </action>
 	</actions>
 </project>

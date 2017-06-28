@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
@@ -59,19 +60,20 @@ public class UpdateVersion implements IAction{
 	//创建新应用的版本信息文件
 	private void createAppVersion(Element appelement, String file) {
 		try{
-			BufferedWriter bw = new BufferedWriter (new OutputStreamWriter (new FileOutputStream(file)));
-			bw.write (appelement.asXML());
-			bw.close();
+			 BufferedWriter bw = new BufferedWriter (new OutputStreamWriter (new FileOutputStream(file)));
+			 bw.write (appelement.asXML());
+			 bw.close();
+
+			 Recorder.createFileLog(file);
+			 logger.info("Update Product: create  new app version file "+file);
 		}catch(Exception e){
-			e.printStackTrace();
-		} 
-		
-		Recorder.createFileLog(file);
-		
+			throw new InstallException("faild to create app version file because "+e);
+		}
 	}
 
 	//修改应用版本信息
-	private void updateAppVersion(Element appelement, String file)throws Exception {
+	private void updateAppVersion(Element appelement, String file) {
+		try{
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(file);
 			Element sourceApp=document.getRootElement();
@@ -97,25 +99,35 @@ public class UpdateVersion implements IAction{
 		    xmlWriter.close();
 		
 		Recorder.editeFileLog(file);
+		logger.info("Update Product: update the version infomation of app "+file);
 
+		}catch(Exception e){
+			throw new InstallException("faild to update App Version because "+e);
+		}
+			
 	}
 
-	private void updateProductVersion(Element product, IContext context) throws Exception{
-
-			String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
-			SAXReader reader = new SAXReader();
-			Document document = reader.read(file);
-	       Node n= document.selectSingleNode("product/version");
-	       n.setText(product.attributeValue("version"));
-	       
-	       OutputFormat format =OutputFormat.createPrettyPrint(); 
-			  format.setEncoding("utf-8");//设置编码格式 
-			  format.setNewLineAfterDeclaration(false);
-	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(file),format);
-		    xmlWriter.write(document);
-		    xmlWriter.close();
-		
-		    Recorder.editeFileLog(file);
+	private void updateProductVersion(Element product, IContext context) {
+           try {
+        	   String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
+   			SAXReader reader = new SAXReader();
+   			Document document = reader.read(file);
+   	       Node n= document.selectSingleNode("product/version");
+   	       n.setText(product.attributeValue("version"));
+   	       
+   	       OutputFormat format =OutputFormat.createPrettyPrint(); 
+   			  format.setEncoding("utf-8");//设置编码格式 
+   			  format.setNewLineAfterDeclaration(false);
+   	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(file),format);
+   		    xmlWriter.write(document);
+   		    xmlWriter.close();
+   		
+   		    Recorder.editeFileLog(file);
+   		    logger.info("Update Product: update the version infomation of product "+file);
+		} catch (Exception e) {
+			throw new InstallException("faild to update Product version because "+e);
+		}
+			
 		}
 
 	public void rollback(IContext context, Map params) throws InstallException {

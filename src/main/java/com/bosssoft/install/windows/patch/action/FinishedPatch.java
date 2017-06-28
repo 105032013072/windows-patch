@@ -21,7 +21,7 @@ public class FinishedPatch implements IAction{
 		} catch (Exception e) {
 			throw new InstallException(e);
 		}
-	   
+	   logger.info("finished patch");
 		
 	}
 

@@ -21,7 +21,7 @@ public class RollBack implements IAction{
 	transient Logger logger = Logger.getLogger(getClass());
 
 	public void execute(IContext context, Map params) throws InstallException {
-		System.out.println("执行回滚");
+		
 	   try {
 	    	String path=PatchFileManager.getPatchRollBackFile();
 		    SAXReader reader=new SAXReader();
@@ -45,6 +45,7 @@ public class RollBack implements IAction{
 			Element e=it.next();
 			try {
 				FileUtils.delete(new File(e.attributeValue("path")), null, null);
+				logger.info("rollback: delete file "+e.attributeValue("path"));
 			} catch (OperationException e1) {
 				throw new InstallException("faild to rollback  "+e);
 			}
@@ -60,6 +61,7 @@ public class RollBack implements IAction{
 				File sourceFile=new File(e.attributeValue("source"));
 				File destFile=new File(e.attributeValue("dest"));
 				FileUtils.copy(sourceFile, destFile, null, null);
+				logger.info("rollback: copy "+sourceFile+" to "+destFile);
 			} catch (OperationException e1) {
 				throw new InstallException("faild to rollback  "+e);
 			}

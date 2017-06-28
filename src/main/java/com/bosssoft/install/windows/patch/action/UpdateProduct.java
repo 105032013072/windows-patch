@@ -1,5 +1,8 @@
 package com.bosssoft.install.windows.patch.action;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -34,18 +37,61 @@ public class UpdateProduct implements IAction{
 		        try {
 		        	iType.update(context);
 				} catch (Exception e) {
-					int i=PatchUtil.showConfirmMessage(I18nUtil.getString("ROLLBACK.INFO"), I18nUtil.getString("ROLLBACK.TITLE"));
-		            if(i==0){//回滚
-		            	MessageManager.syncSendMessage("正在回滚.........");
-		            	//rollback(context, params);
-		            	doFinish(e,context);
-		            }
+					logger.error(e);
 					
+					if("true".equals(context.getStringValue("IS_WINDOWS"))) op4Swing(e,context);
+					else op4Silent(e,context);
 				}
 			}
 		}
 		
 	}
+
+	
+	
+	
+	private void op4Silent(Exception e, IContext context) {
+		Boolean flag=true;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in ));
+		String read = null;
+		
+		System.out.print(I18nUtil.getString("SILENT.ROLLBACK.PROMPT"));
+		while(flag){
+			try {
+				read=br.readLine();
+				if("Y".equalsIgnoreCase(read)){
+					System.out.print(I18nUtil.getString("ROLLBACK.INFO"));
+					//rollback(context, params);
+		        	doFinish(e,context);
+		        	flag=false;
+				}else if("N".equalsIgnoreCase(read)){
+					System.exit(0);
+				}else {
+					System.out.print(I18nUtil.getString("CHOOSE.SILENT.ILLEGAL.INPUT"));
+				}
+				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+	}
+
+
+
+
+	private void op4Swing(Exception e, IContext context) {
+		int i=PatchUtil.showConfirmMessage(I18nUtil.getString("ROLLBACK.INFO"), I18nUtil.getString("ROLLBACK.TITLE"));
+        if(i==0){//回滚
+        	MessageManager.syncSendMessage(I18nUtil.getString("ROLLBACK.INFO"));
+        	//rollback(context, params);
+        	doFinish(e,context);
+        }else System.exit(0);
+		
+	}
+
+
+
 
 	private void doFinish(Exception e, IContext context) {
 	  Recorder.rollBackLog(e);//操作日志

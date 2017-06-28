@@ -2,6 +2,8 @@ package com.bosssoft.install.windows.patch.mate;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
 import com.bosssoft.install.windows.patch.util.Recorder;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
@@ -14,6 +16,7 @@ public class ResourceType implements IType{
 	private String destPath;
 	private Boolean isInstalled;
     private String appName;
+    transient Logger logger = Logger.getLogger(getClass());
 	
 	public void update(IContext context) throws InstallException{
 		if (this.sourcePath == null) {
@@ -33,6 +36,7 @@ public class ResourceType implements IType{
 		
 		try {
 			FileUtils.copy(srcFile, destFile, null, FileOperationMessageListener.INSTANCE);
+		    logger.info("Update Product: copy "+srcFile+" to "+destPath);
 		} catch (OperationException e) {
 			throw new InstallException("Failed to copy " + sourcePath + " to " + destPath, e);
 		}

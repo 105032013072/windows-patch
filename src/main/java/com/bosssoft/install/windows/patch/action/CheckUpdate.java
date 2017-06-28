@@ -13,7 +13,7 @@ public class CheckUpdate implements IAction{
 	transient Logger logger = Logger.getLogger(getClass());
 	public void execute(IContext context, Map params) throws InstallException {
 		context.setValue("IS_CAN_UPDATE", true);
-		
+		//loger记录检查结果
 	}
 
 	public void rollback(IContext context, Map params) throws InstallException {

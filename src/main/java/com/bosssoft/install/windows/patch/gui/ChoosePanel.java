@@ -16,6 +16,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.apache.log4j.Logger;
+
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.platform.installer.core.MainFrameController;
 import com.bosssoft.platform.installer.core.gui.AbstractControlPanel;
@@ -90,6 +92,12 @@ public class ChoosePanel extends AbstractSetupPanel implements ActionListener {
 	}
 
 	public void beforeNext() {
+		 Logger logger = Logger.getLogger(getClass());
+		 String choose="";
+		 if(this.rbtnRollBack.isSelected())choose="RollBack";
+		 else choose="Update";
+		 logger.info("choose the run purpose: "+choose);
+		 
 	}
 
 	public void beforePrevious() {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.swing.plaf.PanelUI;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.log4j.net.SyslogAppender;
 
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
@@ -23,6 +24,7 @@ public class WarType implements IType{
 	private String sourcePath;
 	private String destPath;
 	 private Boolean isInstalled;
+	 transient Logger logger = Logger.getLogger(getClass());
 
 	public void update(IContext context) throws InstallException{
 		
@@ -61,6 +63,7 @@ public class WarType implements IType{
 		
 		//记录修改
 		Recorder.editeFileLog(sourceFile);
+		logger.info("Update Product: modify "+sourceFile);
 	}
 	private void configNginx(IContext context) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"nginx-1.13.0"+File.separator+"conf"+File.separator+"nginx.conf";
@@ -76,8 +79,7 @@ public class WarType implements IType{
 	    PatchUtil.writeToFile(result, sourceFile);
 	    //记录修改
 	    Recorder.editeFileLog(sourceFile);
-	    
-	    
+	    logger.info("Update Product: modify "+sourceFile);
 	}
 	private void copyToBossHome(IContext context) {
 		String homePath=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName+File.separator+"conf";
@@ -96,6 +98,7 @@ public class WarType implements IType{
 					FileUtils.copy(file, targetFile, null, null);
 					//记录操作
 					Recorder.copyFileLog(file.getPath(), targetFile.getPath());
+					logger.info("Update Product: copy "+file.getPath()+" to "+targetFile.getPath());
 				}
 				
 			} catch (OperationException e) {
@@ -127,7 +130,7 @@ public class WarType implements IType{
 			}
 			throw new InstallException(message);
 		}
-		
+		logger.info("Update Product:unzip "+sourceFile.getPath()+" to "+destPath);
 		Recorder.unzipLog(sourceFile.getPath(), destPath);
 	}
 	
