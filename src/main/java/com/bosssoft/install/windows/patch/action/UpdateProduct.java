@@ -39,8 +39,8 @@ public class UpdateProduct implements IAction{
 				} catch (Exception e) {
 					logger.error(e);
 					
-					if("true".equals(context.getStringValue("IS_WINDOWS"))) op4Swing(e,context);
-					else op4Silent(e,context);
+					if("true".equals(context.getStringValue("IS_WINDOWS"))) op4Swing(e,context,params);
+					else op4Silent(e,context,params);
 				}
 			}
 		}
@@ -50,7 +50,7 @@ public class UpdateProduct implements IAction{
 	
 	
 	
-	private void op4Silent(Exception e, IContext context) {
+	private void op4Silent(Exception e, IContext context, Map params) {
 		Boolean flag=true;
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in ));
 		String read = null;
@@ -61,7 +61,7 @@ public class UpdateProduct implements IAction{
 				read=br.readLine();
 				if("Y".equalsIgnoreCase(read)){
 					System.out.print(I18nUtil.getString("ROLLBACK.INFO"));
-					//rollback(context, params);
+					rollback(context, params);
 		        	doFinish(e,context);
 		        	flag=false;
 				}else if("N".equalsIgnoreCase(read)){
@@ -80,11 +80,11 @@ public class UpdateProduct implements IAction{
 
 
 
-	private void op4Swing(Exception e, IContext context) {
+	private void op4Swing(Exception e, IContext context, Map params) {
 		int i=PatchUtil.showConfirmMessage(I18nUtil.getString("ROLLBACK.INFO"), I18nUtil.getString("ROLLBACK.TITLE"));
         if(i==0){//回滚
         	MessageManager.syncSendMessage(I18nUtil.getString("ROLLBACK.INFO"));
-        	//rollback(context, params);
+        	rollback(context, params);
         	doFinish(e,context);
         }else System.exit(0);
 		

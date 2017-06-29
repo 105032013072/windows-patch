@@ -2,7 +2,9 @@ package com.bosssoft.install.windows.patch.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +76,7 @@ public class Recorder {
     	delApps.add(app);
     }
     public static void saveRollback() throws Exception{
-    	    if(delDirs.size()==0&&delFiles.size()==0)return;
+    	    if(delDirs.size()==0&&delFiles.size()==0&&delApps.size()==0)return;
     	
     		String path=PatchFileManager.getPatchRollBackFile();
         	File file=new File(path);
@@ -84,10 +86,12 @@ public class Recorder {
                doc=reader.read(file);
               
         	}else{
-        		file.createNewFile();
-        		SAXReader reader=new SAXReader();
-        		doc=reader.read(file);
-        		doc.add(DocumentHelper.createElement("rollback"));
+        		 doc=DocumentHelper.createDocument();
+        		 Element root=DocumentHelper.createElement("rollback");
+        		//记录备份时间
+     			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     			root.addAttribute("backupTime", df.format(new Date()));
+         		doc.setRootElement(root);	
         	}
         	Element root=doc.getRootElement();
         	Element delet=DocumentHelper.createElement("delete");

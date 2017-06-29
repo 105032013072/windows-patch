@@ -2,7 +2,9 @@ package com.bosssoft.install.windows.patch.action;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,9 @@ public class BackupProduct implements IAction{
 			SAXReader reader=new SAXReader();
 			Document doc=DocumentHelper.createDocument();
 			Element root=DocumentHelper.createElement("rollback");
+			//记录备份时间
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			root.addAttribute("backupTime", df.format(new Date()));
 			doc.setRootElement(root);
 			
 			Element replaceEle=DocumentHelper.createElement("replace");

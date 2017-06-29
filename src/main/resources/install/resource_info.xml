@@ -5,13 +5,13 @@
 <app name="bosssoft-gateway">
 	<war name="bosssoft-gateway.war"/>
 </app>
-	
-<app name="appframe-web"><!--name:应用名-->
-	<war name="appframe-web.war"/><!--name：补丁文件名-->
-</app>	
 
 <app name="cas-server">
 	 <resource name="cas.css" file="/cas-server/css" /><!--file:该资源文件在项目的位置-->
 	 <resource name="login.jsp" file="/cas-server/jsp"/>
 </app>
+	
+<app name="appframe-web"><!--name:应用名-->
+	<war name="appframe-web.war"/><!--name：补丁文件名-->
+</app>	
 </product>

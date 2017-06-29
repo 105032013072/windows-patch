@@ -1,18 +1,28 @@
 package com.bosssoft.install.windows.patch.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.bosssoft.install.windows.patch.util.PatchFileManager;
+import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.MainFrameController;
 import com.bosssoft.platform.installer.core.gui.AbstractControlPanel;
 import com.bosssoft.platform.installer.core.gui.AbstractSetupPanel;
@@ -33,6 +43,8 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 	private JScrollPane jScrollPane1 = new JScrollPane();
 
 	private JEditorPane txtLog = new JEditorPane();
+	
+	private JLabel labelLog=new JLabel();
 
 	public UpdateFinishedPanel() {
 		try {
@@ -58,11 +70,17 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		this.txtLog.setEditable(false);
 		this.txtLog.setOpaque(false);
 		
+		this.labelLog.setText("查看完整的操作日志");
+		this.labelLog.setBounds(new Rectangle(330, 345, 373, 33));
+		
+		//this.labelLog.addMouseListener(l);
+		
 		add(this.setupPane, "Center");
 		this.setupPane.setOpaque(false);
 		this.setupPane.add(this.line, null);
 		this.setupPane.add(this.logLabel, null);
 		this.setupPane.add(this.jScrollPane1, null);
+		this.setupPane.add(this.labelLog, null);
 	}
 
 	private String getLabelText() {
@@ -92,6 +110,40 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		controlPane.setDefaultButton("finish");
 		
 		this.txtLog.setText(getContext().getStringValue("PATCH_LOG"));
+		/*String logPath=System.getProperty("WORKDIR")+File.separator+"logs"+File.separator+"app.log";
+		try {
+			this.txtLog.setPage(new File(logPath).toURL());
+		} catch (Exception e) {
+			throw new InstallException("load the log File error "+e );
+		} */
+		
+		this.labelLog.addMouseListener(new MouseListener() {
+			
+			public void mouseReleased(MouseEvent arg0) {
+			}
+			public void mousePressed(MouseEvent arg0) {
+			    String readmePath=System.getProperty("WORKDIR")+File.separator+"logs"+File.separator+"app.log";
+				
+			    String[] cmds = { "notepad", new File(readmePath).getPath() };
+				try {
+					Runtime.getRuntime().exec(cmds, null, null);
+				} catch (IOException localIOException) {
+				}
+			}
+			
+			public void mouseExited(MouseEvent arg0) {
+				labelLog.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+			
+			public void mouseEntered(MouseEvent arg0) {
+				labelLog.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				
+			}
+			
+			public void mouseClicked(MouseEvent arg0) {
+				
+			}
+		});
 	}
 
 	public boolean checkInput() {

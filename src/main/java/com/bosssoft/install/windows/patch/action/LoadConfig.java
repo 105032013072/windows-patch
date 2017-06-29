@@ -2,7 +2,10 @@ package com.bosssoft.install.windows.patch.action;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +67,8 @@ public class LoadConfig implements IAction{
 			context.setValue("PRODUCT_VERSION", version);
 			context.setValue("PRODUCT_INSTALL_DIR", installDir);
 			context.setValue("APP_DEPLOY_DIR", deployDir);
-			context.setValue("SERVER_PORT", serverPort);
+			context.setValue("APP_SERVER_PORT", serverPort);
+			context.setValue("IP", getIP());
 		}catch(Exception e){
 			String message="cannot get the information of version about already installed product,please make sure the external path is correct ";
 			throw new InstallException(message);
@@ -72,6 +76,29 @@ public class LoadConfig implements IAction{
 		
 		
 	}
+
+      private String getIP() {
+          String ipaddress=null;
+  		try {
+  			Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
+  	
+  			while(netInterfaces.hasMoreElements()){
+  				NetworkInterface ni = netInterfaces.nextElement();
+  				Enumeration<InetAddress> netAddresses = ni.getInetAddresses();
+  				while(netAddresses.hasMoreElements()){
+  					InetAddress ip =  netAddresses.nextElement();
+  					if ((ip != null) && (!ip.isLoopbackAddress()) && (ip.getHostAddress().indexOf(":") == -1)) {
+  						String address = ip.getHostAddress();
+  						ipaddress=address;
+  					}
+  				}
+  			}
+  		} catch (Exception localException) {
+  		 throw new InstallException("faild to get IP because "+localException);
+  		}
+  		if(ipaddress==null)ipaddress="127.0.0.1";
+  		return ipaddress;
+     }
 
 /**
  * 构建需要更新的应用对象

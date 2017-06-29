@@ -124,7 +124,7 @@ public class RollbackDigestPanel extends AbstractSetupPanel {
 		DefaultMutableTreeNode labelNode = null;
 		labelNode = new DefaultMutableTreeNode(versionLabel);
 		this.treeModel.insertNodeInto(labelNode, root, root.getChildCount());
-		this.treeModel.insertNodeInto(new DefaultMutableTreeNode("2014.04.03 备份版本"), labelNode, 0);
+		this.treeModel.insertNodeInto(new DefaultMutableTreeNode(backupTime+" 备份版本"), labelNode, 0);
 
 		labelNode = new DefaultMutableTreeNode(AppsLabel);
 		this.treeModel.insertNodeInto(labelNode, root, root.getChildCount());
