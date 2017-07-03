@@ -63,7 +63,7 @@ public class WarType implements IType{
 		
 		//记录修改
 		Recorder.editeFileLog(sourceFile);
-		logger.info("Update Product: modify "+sourceFile);
+		logger.debug("Update Product: modify "+sourceFile);
 	}
 	private void configNginx(IContext context) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"nginx-1.13.0"+File.separator+"conf"+File.separator+"nginx.conf";
@@ -79,7 +79,7 @@ public class WarType implements IType{
 	    PatchUtil.writeToFile(result, sourceFile);
 	    //记录修改
 	    Recorder.editeFileLog(sourceFile);
-	    logger.info("Update Product: modify "+sourceFile);
+	    logger.debug("Update Product: modify "+sourceFile);
 	}
 	private void copyToBossHome(IContext context) {
 		String homePath=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName+File.separator+"conf";
@@ -98,7 +98,7 @@ public class WarType implements IType{
 					FileUtils.copy(file, targetFile, null, null);
 					//记录操作
 					Recorder.copyFileLog(file.getPath(), targetFile.getPath());
-					logger.info("Update Product: copy "+file.getPath()+" to "+targetFile.getPath());
+					logger.debug("Update Product: copy "+file.getPath()+" to "+targetFile.getPath());
 				}
 				
 			} catch (OperationException e) {
@@ -130,7 +130,7 @@ public class WarType implements IType{
 			}
 			throw new InstallException(message);
 		}
-		logger.info("Update Product:unzip "+sourceFile.getPath()+" to "+destPath);
+		logger.debug("Update Product:unzip "+sourceFile.getPath()+" to "+destPath);
 		Recorder.unzipLog(sourceFile.getPath(), destPath);
 	}
 	

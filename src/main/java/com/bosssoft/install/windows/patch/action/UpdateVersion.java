@@ -65,7 +65,7 @@ public class UpdateVersion implements IAction{
 			 bw.close();
 
 			 Recorder.createFileLog(file);
-			 logger.info("Update Product: create  new app version file "+file);
+			 logger.debug("Update Product: create  new app version file "+file);
 		}catch(Exception e){
 			throw new InstallException("faild to create app version file because "+e);
 		}
@@ -99,7 +99,7 @@ public class UpdateVersion implements IAction{
 		    xmlWriter.close();
 		
 		Recorder.editeFileLog(file);
-		logger.info("Update Product: update the version infomation of app "+file);
+		logger.debug("Update Product: update the version infomation of app "+file);
 
 		}catch(Exception e){
 			throw new InstallException("faild to update App Version because "+e);
@@ -123,7 +123,7 @@ public class UpdateVersion implements IAction{
    		    xmlWriter.close();
    		
    		    Recorder.editeFileLog(file);
-   		    logger.info("Update Product: update the version infomation of product "+file);
+   		    logger.debug("Update Product: update the version infomation of product "+file);
 		} catch (Exception e) {
 			throw new InstallException("faild to update Product version because "+e);
 		}

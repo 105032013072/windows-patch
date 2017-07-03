@@ -149,7 +149,7 @@ public class BackupProduct implements IAction{
 		
 		FileUtils.copy(sourceFile, destFile, null, null);
 		
-		logger.info("backups: cpoy "+sourceFile+" to "+destFile);
+		logger.debug("backups: cpoy "+sourceFile+" to "+destFile);
 		
 	  } catch (Exception e) {
 			throw new InstallException("faild to Backup Product"+e);

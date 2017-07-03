@@ -96,7 +96,7 @@ public class ChoosePanel extends AbstractSetupPanel implements ActionListener {
 		 String choose="";
 		 if(this.rbtnRollBack.isSelected())choose="RollBack";
 		 else choose="Update";
-		 logger.info("choose the run purpose: "+choose);
+		 logger.debug("choose the run purpose: "+choose);
 		 
 	}
 

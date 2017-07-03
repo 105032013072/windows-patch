@@ -120,10 +120,7 @@
 		<action name="check update" classname="com.bosssoft.install.windows.patch.action.CheckUpdate" scale="50">
 		</action>
 		<!--更新检查通过才允许更新-->
-		<if>
-			<equals arg1="${IS_CAN_UPDATE}" arg2="true" />
-				<then>
-					<!--备份-->
+			<!--备份-->
 					<action name="Backup Product"
 						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
 						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/nginx.conf,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
@@ -152,9 +149,6 @@
 						 classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />	
 			        	</else>
 			        </if>
-			      
-			  </then>
-		</if>
 	</actions>
 	
 	

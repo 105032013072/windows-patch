@@ -39,7 +39,7 @@ public class InitAppConf implements IAction{
 				String conftemp=ExpressionParser.parseString(p.getProperty("CONFIG_TEMPLET"));
 				String tempVars=p.getProperty("TEMPLET_variables");
 				doinit(appConfig,conftemp,tempVars,context);//初始化应用服务器下的配置文件
-				logger.info("Update Product: init "+appName+"config file "+appConfig);
+				logger.debug("Update Product: init "+appName+"config file "+appConfig);
 				
 				//初始化外部路径下的配置
 				appConfig=context.getStringValue("BOSSSOFT_HOME")+File.separator
@@ -48,7 +48,7 @@ public class InitAppConf implements IAction{
 						  +new File(appConfig).getName();
 				if(new File(appConfig).exists()) {
 					doinit(appConfig,conftemp, tempVars, context);
-					logger.info("Update Product: init "+appName+"config file "+appConfig);
+					logger.debug("Update Product: init "+appName+"config file "+appConfig);
 				}
 			}catch(Exception e){
 				throw new InstallException("faild to init app config file becuse "+e);

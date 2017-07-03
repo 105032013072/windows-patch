@@ -36,7 +36,7 @@ public class ResourceType implements IType{
 		
 		try {
 			FileUtils.copy(srcFile, destFile, null, FileOperationMessageListener.INSTANCE);
-		    logger.info("Update Product: copy "+srcFile+" to "+destPath);
+		    logger.debug("Update Product: copy "+srcFile+" to "+destPath);
 		} catch (OperationException e) {
 			throw new InstallException("Failed to copy " + sourcePath + " to " + destPath, e);
 		}

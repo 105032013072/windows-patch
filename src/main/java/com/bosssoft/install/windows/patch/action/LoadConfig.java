@@ -136,8 +136,6 @@ public class LoadConfig implements IAction{
 			    app.addPatchFile(resourceType);
 			}
 		}
-		//设置检查文件目录
-	    app.setCheckFileDir(PatchFileManager.getPathCheckDir(appName));
 	    return app;
 	    
 	}

@@ -9,8 +9,8 @@ public class PatchFileManager {
 	private static String patchConfig=patchHome.concat("/resource_info.xml");
     private static String  pacthTemplateDir=null;
 	private static  String pathResourceDir=null;
-    private static  String pathCheckDir=null;
     private static String patchRollBackFile=null;
+    private static String patchCheckFile=null;
 	
 	private static String setpatchHomePath() {
 		String path=null;
@@ -37,9 +37,6 @@ public class PatchFileManager {
 		return patchHome.concat(File.separator).concat(appName);
 	}
 	
-	public static String getPathCheckDir(String appName){
-		return patchHome.concat(File.separator).concat(appName).concat(File.separator).concat("check");
-	}
 
 	public static String getPatchConfig() {
 		return patchConfig;
@@ -61,6 +58,8 @@ public class PatchFileManager {
 		return patchWordDir.concat(File.separator).concat("rollback").concat(File.separator).concat("rollback.xml");
 	}
 	
-	
+	public static String getPatchCheckFile(){
+		return patchHome.concat(File.separator).concat("depend.xml");
+	}
 	
 }

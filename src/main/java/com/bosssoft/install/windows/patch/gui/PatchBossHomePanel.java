@@ -12,6 +12,6 @@ public class PatchBossHomePanel extends BossHomeChoosePanel{
 		super.beforeNext();
 		
 		Logger logger = Logger.getLogger(getClass());
-		logger.info("set Bosssoft_Home: "+getContext().getStringValue("BOSSSOFT_HOME"));
+		logger.debug("set Bosssoft_Home: "+getContext().getStringValue("BOSSSOFT_HOME"));
 	}
 }
