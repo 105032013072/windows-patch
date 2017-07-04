@@ -22,12 +22,11 @@
 			<action name="init install"
 				classname="com.bosssoft.platform.installer.wizard.action.InstallerInitialize"
 				desc="Installer Initialize..." />
-			<echo message="INSTALL_ROOT ............${INSTALL_ROOT}" />
+			<echo message="PATCH_ROOT ............${INSTALL_ROOT}" />
 			<action name="get temp dir" classname="com.bosssoft.platform.installer.wizard.action.GetTempDir"
 				desc="get temprary dir">
 				<parameter name="variable_key" value="TEMP_DIR" />
 			</action>
-			<echo message="tempdir == ${TEMP_DIR}" />
 			<nextstep default="011" />
 		</step>
 		<step id="011" desc="Temp Space Check">
@@ -85,13 +84,14 @@
 		
 		
 		<step id="06" desc="Installing" auto="true">
-			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel" />
+			<!---<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel" />-->
+			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchingPanel" />
 			<actionscall id="install" />
 			<nextstep default="07" />
 		</step>
 		
 		<step id="061" desc="rollback" auto="true">
-			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel"/>
+			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchingPanel"/>
 		    <actionscall id="rollback" />
 			<nextstep default="071" />
 		</step>
@@ -109,7 +109,7 @@
 	</steps>
 
 	<actions id="install">
-		<echo message="updating product....." />
+		
 		<echo message="loading update config...." />
 		<!--加载补丁配置文件-->
 		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadConfig" scale="50">
@@ -121,12 +121,14 @@
 		</action>
 		<!--更新检查通过才允许更新-->
 			<!--备份-->
+			        <echo message="backup Product....." />
 					<action name="Backup Product"
 						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
 						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/nginx.conf,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
 						<parameter name="BACKUP_DIR"  value="D:/test/backup"/>
 					</action>
 					<!--更新应用-->
+					<echo message="update Product....." />
 					<action name="Update Product"
 						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
 			        <!--正常更新就执行-->
@@ -134,18 +136,32 @@
 			        	<equals arg1="${IS_ROLLBACK}" arg2="true" />
 			        	<then></then>
 			        	<else>
-			        <!--更新版本信息-->
-			            <action name="Update Version"
-						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
-						 
-				   <!--初始化应用配置（可选）-->
+			       <!--初始化应用配置（可选）-->
+			       <echo message="init app config....." />
 				   <action name="Init App Config"
 						classname="com.bosssoft.install.windows.patch.action.InitAppConf" >
 				    <parameter name="INIT_FILES"  value="${INSTALL_ROOT}/Initconfig/configInit.properties"/>
 				   </action>
+				   
+				   <if>
+			         <equals arg1="${DB_IS_INIT}" arg2="true" />
+			          <then>
+				      <!--数据库初始化-->
+		              <action name="init DB" classname="com.bosssoft.platform.installer.wizard.action.InitDBSqlScript"
+			              desc="init DB" scale="5">
+		              </action>
+			          </then>
+		           </if>
+			       
+			       
+			        <!--更新版本信息-->
+			         <echo message="update version....." />
+			            <action name="Update Version"
+						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
 						 
 					<!--完善更新-->
-					<action name="Update Version"
+					<echo message="finishing Patch....." />
+					<action name="Finished Patch..."
 						 classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />	
 			        	</else>
 			        </if>
@@ -153,6 +169,7 @@
 	
 	
 	<actions id="rollback">
+	<echo message="rolling back....." />
 	  <action name="rolling back" classname="com.bosssoft.install.windows.patch.action.RollBack">
 	  </action>
 	</actions>

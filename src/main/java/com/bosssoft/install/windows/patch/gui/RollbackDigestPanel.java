@@ -55,12 +55,12 @@ public class RollbackDigestPanel extends AbstractSetupPanel {
 	void jbInit() throws Exception {
 		setLayout(null);
 		setOpaque(false);
-		this.line.setText(I18nUtil.getString("STEP.DIGEST"));
+		this.line.setText(I18nUtil.getString("STEP.ROLLBACKDIGEST"));
 		this.line.setBounds(new Rectangle(26, 5, 581, 27));
 
 		this.introduction.setBackground(Color.white);
 		this.introduction.setOpaque(false);
-		this.introduction.setText(I18nUtil.getString("DIGEST.LABEL"));
+		this.introduction.setText(I18nUtil.getString("ROLLBACK.DIGEST.LABEL"));
 		this.introduction.setEditable(false);
 		this.introduction.setLineWrap(true);
 		this.introduction.setRows(1);
@@ -102,7 +102,7 @@ public class RollbackDigestPanel extends AbstractSetupPanel {
 		controlPane.setButtonVisible("finish", false);
 		controlPane.setButtonVisible("help", false);
 
-		controlPane.setButtonText("next", I18nUtil.getString("BUTTON_INSTALL"));
+		controlPane.setButtonText("next", I18nUtil.getString("ROLLBACK.BUTTON"));
 
 		loadTree();
 		expandAllNodes(this.treeDigest);

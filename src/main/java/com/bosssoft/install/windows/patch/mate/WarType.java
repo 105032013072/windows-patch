@@ -71,7 +71,7 @@ public class WarType implements IType{
 	    String tempPath=PatchFileManager.getPacthTemplateDir()+File.separator+"nginx_template.txt";
 	    String tempContext=PatchUtil.readFile(tempPath);
 	    int index=sourceContent.indexOf("location",sourceContent.indexOf("server"));
-	    String port=context.getStringValue("SERVER_PORT");
+	    String port=context.getStringValue("APP_SERVER_PORT");
 	    String tc=tempContext.replace("%app_name%", appName)
 	              .replace("%ip%","127.0.0.1")
 	              .replace("%port%", port)+System.lineSeparator();

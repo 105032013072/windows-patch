@@ -54,14 +54,13 @@ public class CheckUpdate implements IAction{
 			}
 		}
 		
-		logger.info("找不到匹配的应用");
-		
+		logger.debug("Check Update: 没有找到对应的应用名");
 	}
 
 	//平台检查
 	private void platformCheck(PatchApp patchApp, Depend depend) {
 		if(depend.getPlatformName()!=null){
-			if(depend.getPlatformName().equals(depend.getPlatformName())){
+			if(patchApp.getPlatformName().equalsIgnoreCase(depend.getPlatformName())){
 				if(!ArrayUtils.contains(depend.getPlatformVersions(),patchApp.getPlatformVersion())){//平台版本信息不匹配
 					String msg=I18nUtil.getString("CHECK.FAILD.PLATFORM.VERSION").replace("${appName}", depend.getName());
 					MainFrameController.showConfirmDialog(msg, I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
@@ -88,7 +87,7 @@ public class CheckUpdate implements IAction{
 
 	private void productCheck(Depend depend, IContext context) {
 		String name=depend.getName();
-		if(!name.equals(context.getStringValue("PRODUCT_NAME"))){
+		if(!name.equalsIgnoreCase(context.getStringValue("PRODUCT_NAME"))){
 			MainFrameController.showConfirmDialog(I18nUtil.getString("CHECK.FAILD.PRODUCT.NAME"), I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
 			logger.info("Check Update: "+I18nUtil.getString("CHECK.FAILD.PRODUCT.NAME"));
 			System.exit(0);

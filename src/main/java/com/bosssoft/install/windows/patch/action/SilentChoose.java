@@ -32,12 +32,14 @@ public class SilentChoose implements IAction{
 				if("U".equalsIgnoreCase(read)){
 					flag=false;
 					context.setValue("IS_UPDATE", true);
+					logger.debug("choose the run purpose: update");
 				}else if("R".equalsIgnoreCase(read)){
 					//判断是否可回滚
 					File rollBackFile=new File(PatchFileManager.getPatchRollBackFile());
 					if(rollBackFile.exists()){
 						flag=false;
 						context.setValue("IS_UPDATE", false);
+						logger.debug("choose the run purpose: rollback");
 					}else{
 						System.out.print(I18nUtil.getString("CHOOSE.SILENT.CANNOT.ROLLBACK"));
 					}

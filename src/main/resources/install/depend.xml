@@ -2,12 +2,12 @@
 	<dependency>
 		<type>product</type>
 		<name>nontax</name>
-		<version>1.0,2.0</version>
+		<version>3.0,2.0</version>
 	</dependency>
 	
 	<dependency>
 		<type>app</type>
-		<name>appframe-webs</name><!--应用名-->
+		<name>appframe-web</name><!--应用名-->
 		<!--<version>2.0,3.0</version>--><!--应用版本信息不限制就去掉该标签-->
 		<platform>
 			 <name>bosssoft platform</name>

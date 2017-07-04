@@ -1,6 +1,5 @@
 <!--该配置文件放在resources/install下，文件名固定-->
 <!--补丁文件放在resources/install/${appname}下-->
-<!--是否可更新的配置文件放在resources/install/${appname}/check/下-->
 <product name="nontax">
 <app name="bosssoft-gateway">
 	<war name="bosssoft-gateway.war"/>

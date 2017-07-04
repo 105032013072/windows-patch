@@ -32,7 +32,7 @@ public class PatchUtil {
             }
             br.close();    
         }catch(Exception e){
-            e.printStackTrace();
+            throw new InstallException(e);
         }
         return result.toString();
 	}
@@ -48,7 +48,7 @@ public class PatchUtil {
             }
             br.close();    
         }catch(Exception e){
-            e.printStackTrace();
+        	 throw new InstallException(e);
         }
         return result.toString();
 	}

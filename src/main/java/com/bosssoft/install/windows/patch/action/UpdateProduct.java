@@ -60,10 +60,11 @@ public class UpdateProduct implements IAction{
 			try {
 				read=br.readLine();
 				if("Y".equalsIgnoreCase(read)){
-					System.out.print(I18nUtil.getString("ROLLBACK.INFO"));
+					logger.info(I18nUtil.getString("ROLLBACK.INFO"));
 					rollback(context, params);
 		        	doFinish(e,context);
 		        	flag=false;
+		        	logger.info("回滚完成");
 				}else if("N".equalsIgnoreCase(read)){
 					System.exit(0);
 				}else {
@@ -81,9 +82,10 @@ public class UpdateProduct implements IAction{
 
 
 	private void op4Swing(Exception e, IContext context, Map params) {
-		int i=PatchUtil.showConfirmMessage(I18nUtil.getString("ROLLBACK.INFO"), I18nUtil.getString("ROLLBACK.TITLE"));
-        if(i==0){//回滚
+        int i=MainFrameController.showConfirmDialog(I18nUtil.getString("ROLLBACK.MSG"), I18nUtil.getString("ROLLBACK.TITLE"), JOptionPane.YES_NO_OPTION, 2);
+		if(i==0){//回滚
         	MessageManager.syncSendMessage(I18nUtil.getString("ROLLBACK.INFO"));
+        	logger.info(I18nUtil.getString("ROLLBACK.INFO"));
         	rollback(context, params);
         	doFinish(e,context);
         }else System.exit(0);

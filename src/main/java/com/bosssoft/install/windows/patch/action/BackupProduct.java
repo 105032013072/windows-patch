@@ -1,7 +1,10 @@
 package com.bosssoft.install.windows.patch.action;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,10 +25,12 @@ import com.bosssoft.install.windows.patch.mate.PatchApp;
 import com.bosssoft.install.windows.patch.mate.ResourceType;
 import com.bosssoft.install.windows.patch.mate.WarType;
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
+import com.bosssoft.install.windows.patch.util.PatchUtil;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
 import com.bosssoft.platform.installer.core.util.ExpressionParser;
+import com.bosssoft.platform.installer.core.util.I18nUtil;
 import com.bosssoft.platform.installer.io.FileUtils;
 
 public class BackupProduct implements IAction{
@@ -45,9 +50,43 @@ public class BackupProduct implements IAction{
 				doBackup(element);
 			}
 		}catch(Exception e){
-			throw new InstallException("faild to Backup Product"+e);
+			logger.error(e);
+			if("true".equals(context.getStringValue("IS_WINDOWS"))) op4Swing(e,context,params);
+			else op4Silent(e,context,params);
 		}
 		
+	}
+
+	private void op4Silent(Exception e, IContext context, Map params) {
+
+		Boolean flag=true;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in ));
+		String read = null;
+		
+		System.out.print(I18nUtil.getString("BACKUP.ERROR.INFO")+"(Y/N)");
+		while(flag){
+			try {
+				read=br.readLine();
+				if("Y".equalsIgnoreCase(read)){
+					logger.debug("backups: error and go on update");
+					flag=false;
+				}else if("N".equalsIgnoreCase(read)){
+					System.exit(0);
+				}else {
+					System.out.print(I18nUtil.getString("CHOOSE.SILENT.ILLEGAL.INPUT"));
+				}
+				
+			} catch (IOException e1) {
+				throw new InstallException(e1);
+			}
+		}	
+	}
+
+	private void op4Swing(Exception e, IContext context, Map params) {
+		int i=PatchUtil.showConfirmMessage(I18nUtil.getString("BACKUP.ERROR.INFO"), I18nUtil.getString("BACKUP.ERROR.TITLE"));
+		if(i==0){
+			logger.debug("backups: error and go on update");
+		}else System.exit(0);
 	}
 
 	private void createRollBackFile(String buDir, IContext context, Map params) {

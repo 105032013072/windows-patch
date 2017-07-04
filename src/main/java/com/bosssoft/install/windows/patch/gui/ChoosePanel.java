@@ -59,14 +59,14 @@ public class ChoosePanel extends AbstractSetupPanel implements ActionListener {
 		this.line.setBounds(new Rectangle(26, 5, 581, 27));
 
 		this.txtExplain.setText(I18nUtil.getString("CHOOSE.EXPLAIN"));
-		this.txtExplain.setBounds(new Rectangle(37, 50, 360, 25));
+		this.txtExplain.setBounds(new Rectangle(37, 50, 375, 184));
 		this.txtExplain.setEditable(false);
 		this.txtExplain.setOpaque(false);
 		
 		this.rbtnUpdate.setText(I18nUtil.getString("CHOOSE.UPDATE"));
 		this.rbtnUpdate.setOpaque(false);
-		this.rbtnUpdate.setBounds(new Rectangle(37, 100, 372, 25));
-		this.rbtnRollBack.setBounds(new Rectangle(37, 150, 372, 25));
+		this.rbtnUpdate.setBounds(new Rectangle(37, 150, 372, 25));
+		this.rbtnRollBack.setBounds(new Rectangle(37, 200, 372, 25));
 		this.rbtnUpdate.setSelected(true);
 		this.rbtnRollBack.setText(I18nUtil.getString("CHOOSE.ROLLBACK"));
 		this.rbtnRollBack.setOpaque(false);

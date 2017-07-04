@@ -22,11 +22,9 @@ public class RollbackFinishedPanel extends AbstractSetupPanel{
 	Logger logger = Logger.getLogger(getClass());
 	private StepTitleLabel line = new StepTitleLabel();
 	private JTextArea taIntroduction1 = new JTextArea();
-	private JCheckBox chkReadme;
 	private JLabel lblRun = new JLabel();
 	private JTextArea taRunValue = new JTextArea();
 	private JTextArea taIntroduction2 = new JTextArea();
-	private JLabel lblReadme;
 
 	public RollbackFinishedPanel() {
 		try {
@@ -50,22 +48,7 @@ public class RollbackFinishedPanel extends AbstractSetupPanel{
 		this.taIntroduction1.setBounds(new Rectangle(37, 43, 375, 41));
 		this.taIntroduction1.setEditable(false);
 		String osName = System.getProperty("os.name").toLowerCase();
-		if (osName.indexOf("window") >= 0) {
-			this.chkReadme = new JCheckBox();
-			this.chkReadme.setText(I18nUtil.getString("FINISH.LABEL.REAME"));
-			this.chkReadme.setOpaque(false);
-			this.chkReadme.setBounds(new Rectangle(37, 300, 375, 25));
-			if (isCluster())
-				this.chkReadme.setSelected(false);
-			else
-				add(this.chkReadme, null);
-		} else {
-			this.lblReadme = new JLabel();
-			this.lblReadme.setText(I18nUtil.getString("FINISH.LABEL.REAME2"));
-			this.lblReadme.setOpaque(false);
-			this.lblReadme.setBounds(new Rectangle(37, 300, 375, 25));
-			add(this.lblReadme, null);
-		}
+		
 
 		this.lblRun.setPreferredSize(new Dimension(50, 16));
 		this.lblRun.setBounds(new Rectangle(37, 80, 370, 16));
@@ -116,15 +99,7 @@ public class RollbackFinishedPanel extends AbstractSetupPanel{
 		controlPane.setDefaultButton("finish");
 
 		String osName = System.getProperty("os.name").toLowerCase();
-		if (osName.indexOf("window") >= 0) {
-			this.chkReadme.setVisible(true);
-			this.taRunValue.setText(getContext().getStringValue("STARTMENU_PATH").replace('/', '\\') + getContext().getStringValue("SHORTCUT_GROUP").replace('/', '\\'));
-			this.lblRun.setText(I18nUtil.getString("FINISH.LABEL.RUN"));
-			this.lblRun.setVisible(true);
-			this.taRunValue.setVisible(true);
-		} else if (this.chkReadme != null) {
-			this.chkReadme.setVisible(false);
-		}
+		
 
 		this.taIntroduction1.setText(getFinishLabel());
 
@@ -134,7 +109,7 @@ public class RollbackFinishedPanel extends AbstractSetupPanel{
 	}
 
 	private String getFinishLabel() {
-		String introduction = I18nUtil.getString("ROLLBACK.LABEL");
+		String introduction = I18nUtil.getString("ROLLBACK.LABEL.FINISH");
 		//String productName = I18nUtil.getString("PRODUCT." + getContext().getStringValue("EDITION").toUpperCase());
 
 		return introduction;
@@ -152,21 +127,6 @@ public class RollbackFinishedPanel extends AbstractSetupPanel{
 	}
 
 	public void afterActions() {
-		if ((this.chkReadme != null) && (!this.chkReadme.isSelected())) {
-			return;
-		}
-		String installDir = getContext().getStringValue("INSTALL_DIR");
-		String readmePath = installDir;
-		if (Locale.getDefault().toString().equals("zh_CN"))
-			readmePath = readmePath + "/readme_cn.txt";
-		else {
-			readmePath = readmePath + "/readme.txt";
-		}
-		String[] cmds = { "notepad", readmePath };
-		try {
-			Runtime.getRuntime().exec(cmds, null, null);
-		} catch (IOException localIOException) {
-		}
 	}
 
 	private String treatLicenseInfo() {

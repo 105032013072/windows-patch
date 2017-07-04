@@ -33,6 +33,7 @@ public class RollBack implements IAction{
 		    
 		    Element eleDelete=root.element("delete");
 		    if(eleDelete!=null) doDelete(eleDelete);
+		    logger.info("rollback finish");
 		} catch (Exception e) {
 			throw new InstallException("faild to rollback  "+e);
 		}

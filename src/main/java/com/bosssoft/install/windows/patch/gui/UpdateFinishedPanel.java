@@ -31,7 +31,6 @@ import com.bosssoft.platform.installer.core.util.InstallerFileManager;
 import com.bosssoft.platform.installer.wizard.gui.component.StepTitleLabel;
 
 public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionListener {
-	private static final String LICENSE_FILE_PREFIX = "Bosssoft License_";
 	private StepTitleLabel line = new StepTitleLabel();
 
 	private BorderLayout borderLayout1 = new BorderLayout();
