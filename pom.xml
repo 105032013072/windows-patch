@@ -65,4 +65,117 @@
 </dependency>
     
   </dependencies>
+  
+  <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.src.version}</source>
+                    <target>${java.target.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.bosssoft.install.windows.patch.DemoLauncher</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>appassembler</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Generate both Windows and Linux bash shell execution scripts -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>appassembler-maven-plugin</artifactId>
+                        <version>1.10</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>assemble</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <repositoryLayout>flat</repositoryLayout>
+                            <useWildcardClassPath>true</useWildcardClassPath>
+                            <!-- Set the target configuration directory to be used in the bin scripts -->
+                            <configurationDirectory>conf</configurationDirectory>
+                            <configurationSourceDirectory>src/main/resources</configurationSourceDirectory>
+                            <!-- Copy the contents from "/src/main/config" to the target configuration
+                                directory in the assembled application -->
+                            <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                            <!-- Include the target configuration directory in the beginning of
+                                the classpath declaration in the bin scripts -->
+                            <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                            <!-- Extra JVM arguments that will be included in the bin scripts -->
+                            <repositoryName>lib</repositoryName>
+                            <extraJvmArguments>-Xmx1024m -Djava.net.preferIPv4Stack=true -Dfile.encoding=utf-8</extraJvmArguments>
+                            <programs>
+                                <program>
+                                    <id>main</id>
+                                    <mainClass>com.bosssoft.install.windows.patch.DemoLauncher</mainClass>
+                                    <name>main</name>
+                                </program>
+                            </programs>
+                            <binFileExtensions>
+                                <unix>.sh</unix>
+                            </binFileExtensions>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>fatjar</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.bosssoft.install.windows.patch.DemoLauncher</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

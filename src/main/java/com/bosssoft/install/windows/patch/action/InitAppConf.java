@@ -17,6 +17,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
+import com.bosssoft.install.windows.patch.util.ExceptionProcessor;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
@@ -51,7 +52,9 @@ public class InitAppConf implements IAction{
 					logger.debug("Update Product: init "+appName+"config file "+appConfig);
 				}
 			}catch(Exception e){
-				throw new InstallException("faild to init app config file becuse "+e);
+				logger.error(e);
+				ExceptionProcessor processor=new ExceptionProcessor();
+				processor.doHandle(e, context, params);
 			}
 			
 		}

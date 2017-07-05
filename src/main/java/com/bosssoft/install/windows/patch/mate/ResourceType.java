@@ -43,10 +43,6 @@ public class ResourceType implements IType{
 	}
 
   public void record4Rollback(IContext context) throws InstallException{
-	  if(!isInstalled){
-			//记录删除该文件
-		  Recorder.rollbackDeleteFile(destPath);
-	   }
 		
 	}
 	

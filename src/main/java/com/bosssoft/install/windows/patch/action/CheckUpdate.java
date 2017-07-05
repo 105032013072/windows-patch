@@ -1,6 +1,7 @@
 package com.bosssoft.install.windows.patch.action;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,22 +34,22 @@ public class CheckUpdate implements IAction{
 			if("product".equals(type)) productCheck(depend,context);
 			else if("app".equals(type)){
 				List<PatchApp> patchApps=(List<PatchApp>) context.getValue("PATCH_APPS");
-			    appCheck(depend,patchApps);
+			    appCheck(depend,patchApps,context);
 			}
 		}
         logger.info("Check Update:pass");
 	}
 
-	private void appCheck(Depend depend, List<PatchApp> patchApps) {
+	private void appCheck(Depend depend, List<PatchApp> patchApps, IContext context) {
 		for (PatchApp patchApp : patchApps) {
 			if(patchApp.getAppName().equals(depend.getName())){
 				if(appVersionMatch(patchApp,depend)){
-					platformCheck(patchApp,depend);
+					platformCheck(patchApp,depend,context);
 				}else{
-					String msg=I18nUtil.getString("CHECK.FAILD.APP.VERSION").replace("${appName}", depend.getName());
-					MainFrameController.showConfirmDialog(msg, I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
-					logger.debug("Check Update: "+msg);
-					System.exit(0);
+					String msg=I18nUtil.getString("CHECK.FAILD.APP.VERSION").replace("${appName}", depend.getName())
+							          .replace("${exitversion}", patchApp.getAppversion())
+							          .replace("${deversion}",Arrays.toString(depend.getVersions()));
+					showUnqualified(msg, context);
 				}
 				return;
 			}
@@ -58,20 +59,20 @@ public class CheckUpdate implements IAction{
 	}
 
 	//平台检查
-	private void platformCheck(PatchApp patchApp, Depend depend) {
+	private void platformCheck(PatchApp patchApp, Depend depend, IContext context) {
 		if(depend.getPlatformName()!=null){
 			if(patchApp.getPlatformName().equalsIgnoreCase(depend.getPlatformName())){
 				if(!ArrayUtils.contains(depend.getPlatformVersions(),patchApp.getPlatformVersion())){//平台版本信息不匹配
-					String msg=I18nUtil.getString("CHECK.FAILD.PLATFORM.VERSION").replace("${appName}", depend.getName());
-					MainFrameController.showConfirmDialog(msg, I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
-					logger.info("Check Update: "+msg);
-					System.exit(0);
+					String msg=I18nUtil.getString("CHECK.FAILD.PLATFORM.VERSION").replace("${appName}", depend.getName())
+							.replace("${exitversion}", patchApp.getPlatformVersion())
+							.replace("${deversion}", Arrays.toString(depend.getPlatformVersions()));
+					showUnqualified(msg, context);
 				}
 			}else{//平台名称不匹配
-				String msg=I18nUtil.getString("CHECK.FAILD.PLATFORM.NAME").replace("${appName}", depend.getName());
-				MainFrameController.showConfirmDialog(msg, I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
-				logger.info("Check Update: "+msg);
-				System.exit(0);
+				String msg=I18nUtil.getString("CHECK.FAILD.PLATFORM.NAME").replace("${appName}", depend.getName())
+						.replace("${exitName}", patchApp.getPlatformName())
+						.replace("${deName}", depend.getPlatformName());
+				showUnqualified(msg, context);
 			}
 		}
 		
@@ -88,17 +89,27 @@ public class CheckUpdate implements IAction{
 	private void productCheck(Depend depend, IContext context) {
 		String name=depend.getName();
 		if(!name.equalsIgnoreCase(context.getStringValue("PRODUCT_NAME"))){
-			MainFrameController.showConfirmDialog(I18nUtil.getString("CHECK.FAILD.PRODUCT.NAME"), I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
-			logger.info("Check Update: "+I18nUtil.getString("CHECK.FAILD.PRODUCT.NAME"));
-			System.exit(0);
+			String msg=I18nUtil.getString("CHECK.FAILD.PRODUCT.NAME").replace("${exitName}", context.getStringValue("PRODUCT_NAME"))
+					    .replace("${deName}", name);
+			showUnqualified(msg, context);
 		}
 		if(!ArrayUtils.contains(depend.getVersions(), context.getStringValue("PRODUCT_VERSION"))){
-			MainFrameController.showConfirmDialog(I18nUtil.getString("CHECK.FAILD.PRODUCT.VERSION"), I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
-			logger.info("Check Update: "+I18nUtil.getString("CHECK.FAILD.PRODUCT.VERSION"));
-			System.exit(0);
+			String msg=I18nUtil.getString("CHECK.FAILD.PRODUCT.VERSION").replace("${exitversion}", context.getStringValue("PRODUCT_VERSION"))
+					.replace("${deversion}", Arrays.toString(depend.getVersions()));
+			showUnqualified(msg, context);
 		}
 	}
 
+	private void showUnqualified(String msg,IContext context){
+		if("true".equals(context.getStringValue("IS_WINDOWS"))){
+			MainFrameController.showConfirmDialog(msg, I18nUtil.getString("DIALOG.TITLE.INFO"), JOptionPane.DEFAULT_OPTION, 2);
+		}
+		logger.info("Check Update: "+msg.replace("\n\n", ","));
+		System.exit(0);
+	}
+	
+	
+	
 	//加载depend.xml
 	private List<Depend> getdependList() {
 		List<Depend> list=new ArrayList<Depend>();

@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -28,6 +30,7 @@ import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.install.windows.patch.util.PatchUtil;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
+import com.bosssoft.platform.installer.core.MainFrameController;
 import com.bosssoft.platform.installer.core.action.IAction;
 import com.bosssoft.platform.installer.core.util.ExpressionParser;
 import com.bosssoft.platform.installer.core.util.I18nUtil;
@@ -83,7 +86,7 @@ public class BackupProduct implements IAction{
 	}
 
 	private void op4Swing(Exception e, IContext context, Map params) {
-		int i=PatchUtil.showConfirmMessage(I18nUtil.getString("BACKUP.ERROR.INFO"), I18nUtil.getString("BACKUP.ERROR.TITLE"));
+		int i=MainFrameController.showConfirmDialog(I18nUtil.getString("BACKUP.ERROR.INFO"), I18nUtil.getString("BACKUP.ERROR.TITLE"), JOptionPane.YES_NO_OPTION, 2);
 		if(i==0){
 			logger.debug("backups: error and go on update");
 		}else System.exit(0);

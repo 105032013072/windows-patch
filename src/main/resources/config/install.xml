@@ -122,7 +122,7 @@
 		<!--更新检查通过才允许更新-->
 			<!--备份-->
 			        <echo message="backup Product....." />
-					<action name="Backup Product"
+				    <action name="Backup Product"
 						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
 						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/nginx.conf,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
 						<parameter name="BACKUP_DIR"  value="D:/test/backup"/>
@@ -147,7 +147,7 @@
 			         <equals arg1="${DB_IS_INIT}" arg2="true" />
 			          <then>
 				      <!--数据库初始化-->
-		              <action name="init DB" classname="com.bosssoft.platform.installer.wizard.action.InitDBSqlScript"
+		              <action name="init DB" classname="com.bosssoft.install.windows.patch.action.InitDB"
 			              desc="init DB" scale="5">
 		              </action>
 			          </then>

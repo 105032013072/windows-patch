@@ -36,10 +36,34 @@ public class WarType implements IType{
 		copyToSvr(context);//将war解压到应用服务器下
 		copyToBossHome(context);//配置文件拷贝到BossHome下
 		configNginx(context);//nginx配置转发
-	    editUninstall(context);//修改uninstall.xml
+		editeUninstall(context);//修改uninstall.bat或者uninstall.sh
 	}
 	
-	private void editUninstall(IContext context) {
+	private void editeUninstall(IContext context) {
+		if("true".equals(context.getStringValue("IS_WINDOWS"))) editeBat(context);
+		else editeSh(context);
+	}
+	private void editeSh(IContext context) {
+		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"uninstall.sh";
+		StringBuffer add=new StringBuffer(System.lineSeparator());
+		//删除应用服务器下
+		add.append("rm -rf ")
+		    .append(context.getStringValue("APP_DEPLOY_DIR"))
+		    .append(File.separator)
+		    .append(appName)
+		    .append(System.lineSeparator());
+		//删除boss_home下的配置文件
+		add.append("rm -rf ")
+		   .append(context.getStringValue("BOSSSOFT_HOME"))
+		   .append(File.separator)
+		   .append(appName)
+		   .append(System.lineSeparator());	
+		PatchUtil.wirteAppendFile(add.toString(), sourceFile);
+		//记录修改
+		Recorder.editeFileLog(sourceFile);
+	    logger.debug("Update Product: modify "+sourceFile);
+	}
+	private void editeBat(IContext context) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"uninstall.bat";
 		String sourceContext=PatchUtil.readFile(sourceFile,"GBK");
 		int index=sourceContext.indexOf("rd");
@@ -48,22 +72,23 @@ public class WarType implements IType{
 		add.append("rd /s /q ")
 		    .append(context.getStringValue("APP_DEPLOY_DIR"))
 		    .append(File.separator)
-		    .append(name.substring(0,name.indexOf(".war")))
+		    .append(appName)
 		    .append(System.lineSeparator());
 		//删除boss_home下的配置文件
 		add.append("rd /s /q ")
 		   .append(context.getStringValue("BOSSSOFT_HOME"))
 		   .append(File.separator)
-		   .append(name.substring(0,name.indexOf(".war")))
+		   .append(appName)
 		   .append(System.lineSeparator());
 		
 		String result=new StringBuffer(sourceContext).insert(index, add).toString();
 		
 		PatchUtil.writeToFile(result, sourceFile,"GBK");
-		
 		//记录修改
 		Recorder.editeFileLog(sourceFile);
 		logger.debug("Update Product: modify "+sourceFile);
+		
+		
 	}
 	private void configNginx(IContext context) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"nginx-1.13.0"+File.separator+"conf"+File.separator+"nginx.conf";

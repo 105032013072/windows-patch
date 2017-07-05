@@ -74,14 +74,13 @@ public class PatchUtil {
 			}
 	}
 	
-	public static int showConfirmMessage(String msg, String title){
-		JPanel jpanel = new JPanel();
-		JTextArea textArea = new JTextArea(4, 40);
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textArea.setText(msg);
-		textArea.setEditable(false);
-		jpanel.add(new JScrollPane(textArea));
-		return MainFrameController.showConfirmDialog(msg, title, JOptionPane.YES_NO_OPTION, 2);
+	public static void wirteAppendFile(String result,String filePath){
+		try {
+	           BufferedWriter bw = new BufferedWriter (new OutputStreamWriter (new FileOutputStream(filePath,true)));
+				bw.write (result);
+				bw.close();
+			} catch (IOException e) {
+				throw new InstallException("Failed to ConfigComponents", e);
+			}
 	}
 }

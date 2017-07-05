@@ -15,20 +15,16 @@ import org.dom4j.io.XMLWriter;
 
 import com.bosssoft.install.windows.patch.mate.Depend;
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
+import com.bosssoft.install.windows.patch.util.PatchUtil;
 import com.bosssoft.platform.installer.io.FileUtils;
 import com.bosssoft.platform.installer.io.operation.exception.OperationException;
 
 public class GetTest {
 	
   public static void main(String[] args){
-	      
-	try {
-	   Depend depend=new Depend();
-	   System.out.println(depend.getVersions().length);
-	} catch (Exception e) {
-	e.printStackTrace();
-	}
-	
+	      String file="d://log.txt";
+	      String result="this is my love";
+	     PatchUtil.wirteAppendFile(result, file);
 	 
   }
 }

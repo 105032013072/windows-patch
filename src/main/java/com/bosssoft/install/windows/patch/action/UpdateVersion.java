@@ -19,6 +19,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.bosssoft.install.windows.patch.util.ExceptionProcessor;
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.install.windows.patch.util.Recorder;
 import com.bosssoft.platform.installer.core.IContext;
@@ -45,8 +46,9 @@ public class UpdateVersion implements IAction{
 			setAppVersion(appelement,context);
 		}
 		}catch(Exception e){
-			rollback(context, params);
-			throw new InstallException(e);
+			logger.error(e);
+			ExceptionProcessor processor=new ExceptionProcessor();
+			processor.doHandle(e, context, params);
 		}
 	}
 
@@ -131,15 +133,6 @@ public class UpdateVersion implements IAction{
 		}
 
 	public void rollback(IContext context, Map params) throws InstallException {
-		try {
-			Recorder.saveRollback();
-			
-			//执行回滚操作
-			RollBack rollBack=RollBack.class.newInstance();
-			rollBack.execute(context, params);
-		} catch (Exception e) {
-			throw new InstallException(e);
-		}
 		
 	}
 }
