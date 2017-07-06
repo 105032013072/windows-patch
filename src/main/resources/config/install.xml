@@ -131,13 +131,8 @@
 					<echo message="update Product....." />
 					<action name="Update Product"
 						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
-			        <!--正常更新就执行-->
-			        <if>
-			        	<equals arg1="${IS_ROLLBACK}" arg2="true" />
-			        	<then></then>
-			        	<else>
+			     
 			       <!--初始化应用配置（可选）-->
-			       <echo message="init app config....." />
 				   <action name="Init App Config"
 						classname="com.bosssoft.install.windows.patch.action.InitAppConf" >
 				    <parameter name="INIT_FILES"  value="${INSTALL_ROOT}/Initconfig/configInit.properties"/>
@@ -155,16 +150,13 @@
 			       
 			       
 			        <!--更新版本信息-->
-			         <echo message="update version....." />
 			            <action name="Update Version"
 						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
-						 
+					
 					<!--完善更新-->
-					<echo message="finishing Patch....." />
 					<action name="Finished Patch..."
 						 classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />	
-			        	</else>
-			        </if>
+	              
 	</actions>
 	
 	

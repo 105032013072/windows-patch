@@ -14,6 +14,9 @@ public class FinishedPatch implements IAction{
 
 	transient Logger logger = Logger.getLogger(getClass());
 	public void execute(IContext context, Map params) throws InstallException {
+		if("true".equals(context.getStringValue("IS_ROLLBACK")))return;
+		
+		logger.info("finishing Patch.....");
 		context.setValue("PATCH_LOG", Recorder.getPatchLog());
 		//创建回滚的操作文件
 		try {

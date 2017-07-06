@@ -92,7 +92,7 @@ public class ChoosePanel extends AbstractSetupPanel implements ActionListener {
 	}
 
 	public void beforeNext() {
-		 Logger logger = Logger.getLogger(getClass());
+		Logger logger = Logger.getLogger(getClass());
 		 String choose="";
 		 if(this.rbtnRollBack.isSelected())choose="RollBack";
 		 else choose="Update";

@@ -13,6 +13,9 @@ import com.bosssoft.platform.installer.wizard.action.InitDBSqlScript;
 public class InitDB implements IAction{
 	transient Logger logger = Logger.getLogger(getClass());
 	public void execute(IContext context, Map params) throws InstallException {
+		if("true".equals(context.getStringValue("IS_ROLLBACK")))return;
+		
+		logger.info("init DB....");
 		InitDBSqlScript dbSqlScript=new InitDBSqlScript();
 		try{
 			dbSqlScript.execute(context, params);

@@ -30,6 +30,9 @@ public class UpdateVersion implements IAction{
 	transient Logger logger = Logger.getLogger(getClass());
 
 	public void execute(IContext context, Map params) throws InstallException {
+		if("true".equals(context.getStringValue("IS_ROLLBACK")))return;
+		
+		logger.info("update version.....");
 		String patchVersion=PatchFileManager.getPatchHome()+File.separator+"version.xml";
 		try{
 			SAXReader reader = new SAXReader();
