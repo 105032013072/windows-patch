@@ -21,6 +21,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.MainFrameController;
@@ -37,14 +42,11 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 
 	private JPanel setupPane = new JPanel();
 
-	private JTextArea logLabel = new JTextArea();
-
-	private JScrollPane jScrollPane1 = new JScrollPane();
-
-	private JEditorPane txtLog = new JEditorPane();
+	private JTextArea finishLabel= new JTextArea();
 	
 	private JLabel labelLog=new JLabel();
 
+	
 	public UpdateFinishedPanel() {
 		try {
 			jbInit();
@@ -60,31 +62,42 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		this.setupPane.setLayout(null);
 		this.line.setText(I18nUtil.getString("STEP.LOG"));
 		this.line.setBounds(new Rectangle(26, 5, 581, 27));
-		this.jScrollPane1.getViewport().add(this.txtLog, null);
-		this.logLabel.setOpaque(false);
-		this.logLabel.setEditable(false);
-		this.logLabel.setBounds(new Rectangle(37, 35, 373, 33));
-		this.jScrollPane1.setBounds(new Rectangle(36, 68, 410, 260));
-		this.jScrollPane1.setOpaque(false);
-		this.txtLog.setEditable(false);
-		this.txtLog.setOpaque(false);
+		
+		this.finishLabel.setOpaque(false);
+		this.finishLabel.setEditable(false);
+		this.finishLabel.setBounds(new Rectangle(37, 35, 373, 33));
+		this.finishLabel.setText(getshowContent());
 		
 		this.labelLog.setText("查看完整的操作日志");
 		this.labelLog.setBounds(new Rectangle(330, 345, 373, 33));
 		
-		//this.labelLog.addMouseListener(l);
-		
 		add(this.setupPane, "Center");
 		this.setupPane.setOpaque(false);
 		this.setupPane.add(this.line, null);
-		this.setupPane.add(this.logLabel, null);
-		this.setupPane.add(this.jScrollPane1, null);
+		this.setupPane.add(this.finishLabel, null);
 		this.setupPane.add(this.labelLog, null);
 	}
 
-	private String getLabelText() {
-		String text = I18nUtil.getString("LOG.LABEL");
-		return text;
+
+
+	private String getshowContent() throws Exception {
+		String msg=null;
+		if("true".equals(getContext().getStringValue("IS_ROLLBACK"))){
+			msg=I18nUtil.getString("FINISH.UPDATE.ROLLBACK.SHOW");
+		}else{
+			msg=I18nUtil.getString("FINISH.UPDATE.ROLLBACK.SHOW").replace("${version}", getProductVersion());
+		}
+		return msg;
+	}
+
+	//获取产品新版本
+	private String getProductVersion() throws Exception {
+	   String versionFile=PatchFileManager.getPatchProdcutVersionFile(getContext());
+	   SAXReader reader=new SAXReader();
+	   Document doc =reader.read(new File(versionFile));
+	   Element root=doc.getRootElement();
+	   
+	   return root.elementText("version");
 	}
 
 	public void afterShow() {
@@ -98,7 +111,6 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 
 	
 	public void beforeShow() {
-		this.logLabel.setText(getLabelText());
 
 		AbstractControlPanel controlPane = MainFrameController.getControlPanel();
 		controlPane.setButtonVisible("finish", true);
@@ -107,15 +119,7 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		controlPane.setButtonVisible("cancel", false);
 		controlPane.setButtonVisible("previous", false);
 		controlPane.setDefaultButton("finish");
-		
-		this.txtLog.setText(getContext().getStringValue("PATCH_LOG"));
-		/*String logPath=System.getProperty("WORKDIR")+File.separator+"logs"+File.separator+"app.log";
-		try {
-			this.txtLog.setPage(new File(logPath).toURL());
-		} catch (Exception e) {
-			throw new InstallException("load the log File error "+e );
-		} */
-		
+	
 		this.labelLog.addMouseListener(new MouseListener() {
 			
 			public void mouseReleased(MouseEvent arg0) {

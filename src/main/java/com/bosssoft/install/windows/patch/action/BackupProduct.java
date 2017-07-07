@@ -40,8 +40,7 @@ public class BackupProduct implements IAction{
 	transient Logger logger = Logger.getLogger(getClass());
 
 	public void execute(IContext context, Map params) throws InstallException {
-		String buDir=params.get("BACKUP_DIR").toString();
-		createRollBackFile(buDir,context,params);//创建rollback.xml
+		createRollBackFile(context,params);//创建rollback.xml
 		//读取rollback.xml，执行备份
 		try{
 			SAXReader reader = new SAXReader();
@@ -92,7 +91,7 @@ public class BackupProduct implements IAction{
 		}else System.exit(0);
 	}
 
-	private void createRollBackFile(String buDir, IContext context, Map params) {
+	private void createRollBackFile(IContext context, Map params) {
 
 		List<PatchApp> list=(List<PatchApp>) context.getValue("PATCH_APPS");
 		
@@ -107,13 +106,13 @@ public class BackupProduct implements IAction{
 			
 			Element replaceEle=DocumentHelper.createElement("replace");
 			//根据补丁资源配置备份信息
-			addPatchResource(replaceEle,list,buDir,context);
+			addPatchResource(replaceEle,list,context);
 			
 			//根据install.xml中的设置的额外备份文件配置备份信息
-			addExtraFiles(replaceEle,params,buDir);
+			addExtraFiles(replaceEle,params,context);
 	        
 			//备份信息中配置版本信息文件
-			addVersionFiles(replaceEle,buDir,context);
+			addVersionFiles(replaceEle,context);
 			
 			root.add(replaceEle);
 			
@@ -131,7 +130,7 @@ public class BackupProduct implements IAction{
 		
 	}
 
-	private void addVersionFiles(Element replaceEle, String buDir, IContext context) {
+	private void addVersionFiles(Element replaceEle, IContext context) {
 		//app版本信息
 		List<PatchApp> list=(List<PatchApp>) context.getValue("PATCH_APPS");
 		for (PatchApp patchApp : list) {
@@ -139,40 +138,43 @@ public class BackupProduct implements IAction{
 				String avp=patchApp.getAppName()+File.separator+"version.xml";
 				Element e=DocumentHelper.createElement("file");
 				e.addAttribute("dest", context.getStringValue("BOSSSOFT_HOME")+File.separator+avp);
-				e.addAttribute("source", buDir+File.separator+"version"+File.separator+avp);
+				String rootDir=PatchFileManager.getPatchBackupDir(context, patchApp.getAppName());
+				e.addAttribute("source", rootDir+File.separator+"version"+File.separator+avp);
 				replaceEle.add(e);
 			}
 		}
 		
 		//产品版本信息
-		String pv=File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
+		String pv=File.separator+context.getStringValue("PRODUCT_NAME")+"_info.xml";
 		Element pe=DocumentHelper.createElement("file");
-		pe.addAttribute("dest", context.getStringValue("BOSSSOFT_HOME")+File.separator+pv);
-		pe.addAttribute("source", buDir+File.separator+"version"+File.separator+pv);
+		pe.addAttribute("dest", PatchFileManager.getPatchProdcutVersionFile(context));
+		String rootDir=PatchFileManager.getPatchBackupDir(context, context.getStringValue("PRODUCT_NAME"));
+		pe.addAttribute("source", rootDir+File.separator+"version"+File.separator+pv);
 		replaceEle.add(pe);
 	}
 
-	private void addExtraFiles(Element replaceEle, Map params, String buDir) {
+	private void addExtraFiles(Element replaceEle, Map params,IContext context) {
 		Object para=params.get("EXTRA_FILES");
 		if(para!=null){
 			String[] extraFiles=para.toString().split(",");
 			for (String file : extraFiles) {
 				Element e=DocumentHelper.createElement("file");
-				String str=file.substring(file.indexOf(File.separator),file.length());
+				String str=file.substring(file.lastIndexOf("/") + 1);
+				String rootDir=PatchFileManager.getPatchBackupDir(context, context.getStringValue("PRODUCT_NAME"));
 				e.addAttribute("dest", file);
-				e.addAttribute("source", buDir+File.separator+str);
+				e.addAttribute("source", rootDir+File.separator+str);
 				replaceEle.add(e);
 			}
 		}
 		
 	}
 
-	private void addPatchResource(Element replaceEle, List<PatchApp> list, String buDir, IContext context) {
+	private void addPatchResource(Element replaceEle, List<PatchApp> list, IContext context) {
 		
 		for (PatchApp patchApp : list) {
 			if(patchApp.getIsInstalled()){
 				String dest=context.getStringValue("APP_DEPLOY_DIR")+File.separator+patchApp.getAppName();
-				String source=buDir+File.separator+patchApp.getAppName();
+				String source=PatchFileManager.getPatchBackupDir(context, patchApp.getAppName())+patchApp.getAppName();
 				Element dire=DocumentHelper.createElement("app");
 				dire.addAttribute("appName", patchApp.getAppName());
 				dire.addAttribute("dest", dest);

@@ -20,7 +20,7 @@ public class LogUtil {
 			e.printStackTrace();
 			return;
 		}
-		properties.setProperty("log4j.appender.R.File", logFile);
+		properties.setProperty("log4j.appender.InstallFile.File", logFile);
 
 		if (System.getProperty("install.debug", "false").equals("true")) {
 			properties.setProperty("log4j.appender.InstallFile.Threshold", "DEBUG");

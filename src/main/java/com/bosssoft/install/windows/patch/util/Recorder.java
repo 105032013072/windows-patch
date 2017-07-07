@@ -27,42 +27,7 @@ public class Recorder {
    private static List<String> delFiles=new ArrayList<String>();
    private static List<String> delDirs=new ArrayList<String>();
    private static List<DelApp> delApps=new ArrayList<DelApp>();
-	
-    private static StringBuffer logbuffer=new StringBuffer("");
-    private static int i=1;
-    
-    public static void createFileLog(String filePath){
-    	String message=(i++)+"."+I18nUtil.getString("LOGGER_CREATE_FILE")+filePath;
-    	logbuffer.append(message);
-    	logbuffer.append(System.lineSeparator());
-    }
-    
-    public static void editeFileLog(String filePath){
-    	String message=(i++)+"."+I18nUtil.getString("LOGGER_EDITE_FILE")+filePath;
-    	logbuffer.append(message);
-    	logbuffer.append(System.lineSeparator());
-    }
-    
-    public static void unzipLog(String sourcePath,String destPath){
-    	String message=(i++)+"."+sourcePath+I18nUtil.getString("LOGGER_UNZIP")+destPath;
-    	logbuffer.append(message);
-    	logbuffer.append(System.lineSeparator());
-    }
-    
-    public static void copyFileLog(String sourcePath,String destPath){
-    	String message=(i++)+"."+sourcePath+I18nUtil.getString("LOGGER_COPY")+destPath;
-    	logbuffer.append(message);
-    	logbuffer.append(System.lineSeparator());
-    }
-    
-    public static void rollBackLog(Exception ex){
-    	String message=(i++)+"."+I18nUtil.getString("LOGGER_ROLLBACK_ONE")+ex.getMessage();
-        logbuffer.append(message);
-        logbuffer.append(System.lineSeparator());
-        logbuffer.append((i++)+"."+I18nUtil.getString("LOGGER_ROLLBACK_TWO"));
-        logbuffer.append(System.lineSeparator());
-    }
-    
+
     public static void  rollbackDeleteFile(String filePath){
     	delFiles.add(filePath);
     }
@@ -121,10 +86,6 @@ public class Recorder {
 		    xmlWriter.write(doc);
 		    xmlWriter.close();
     	
-    }
-    
-    public static String getPatchLog(){
-    	return logbuffer.toString();
     }
     
 }

@@ -17,7 +17,6 @@ public class FinishedPatch implements IAction{
 		if("true".equals(context.getStringValue("IS_ROLLBACK")))return;
 		
 		logger.info("finishing Patch.....");
-		context.setValue("PATCH_LOG", Recorder.getPatchLog());
 		//创建回滚的操作文件
 		try {
 			Recorder.saveRollback();

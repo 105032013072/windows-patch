@@ -59,8 +59,7 @@ public class WarType implements IType{
 		   .append(appName)
 		   .append(System.lineSeparator());	
 		PatchUtil.wirteAppendFile(add.toString(), sourceFile);
-		//记录修改
-		Recorder.editeFileLog(sourceFile);
+		
 	    logger.debug("Update Product: modify "+sourceFile);
 	}
 	private void editeBat(IContext context) {
@@ -84,8 +83,7 @@ public class WarType implements IType{
 		String result=new StringBuffer(sourceContext).insert(index, add).toString();
 		
 		PatchUtil.writeToFile(result, sourceFile,"GBK");
-		//记录修改
-		Recorder.editeFileLog(sourceFile);
+		
 		logger.debug("Update Product: modify "+sourceFile);
 		
 		
@@ -102,8 +100,7 @@ public class WarType implements IType{
 	              .replace("%port%", port)+System.lineSeparator();
 	    String result=(new StringBuffer(sourceContent).insert(index, tc)).toString();
 	    PatchUtil.writeToFile(result, sourceFile);
-	    //记录修改
-	    Recorder.editeFileLog(sourceFile);
+	    
 	    logger.debug("Update Product: modify "+sourceFile);
 	}
 	private void copyToBossHome(IContext context) {
@@ -121,8 +118,7 @@ public class WarType implements IType{
 					String dest=fileName.substring(fileName.lastIndexOf("/")+1,fileName.length());
 					File targetFile=new File(homedir+File.separator+dest);
 					FileUtils.copy(file, targetFile, null, null);
-					//记录操作
-					Recorder.copyFileLog(file.getPath(), targetFile.getPath());
+					
 					logger.debug("Update Product: copy "+file.getPath()+" to "+targetFile.getPath());
 				}
 				
@@ -156,7 +152,7 @@ public class WarType implements IType{
 			throw new InstallException(message);
 		}
 		logger.debug("Update Product:unzip "+sourceFile.getPath()+" to "+destPath);
-		Recorder.unzipLog(sourceFile.getPath(), destPath);
+		
 	}
 	
    public void record4Rollback(IContext context) throws InstallException{

@@ -4,7 +4,7 @@
 	<variable name="VERSION_NUMBER" value="3.0" />
 	<variable name="EDITION" value="PE" />
 	<variable name="RUNNER_TYPE" value="install" />
-	<!-- å®‰è£…æ­¤äº§å“éœ€è¦çš„ç©ºé—´ï¼Œä»¥MBä¸ºå•ä½ -->
+	<!-- °²×°´Ë²úÆ·ÐèÒªµÄ¿Õ¼ä£¬ÒÔMBÎªµ¥Î» -->
 	<variable name="DISK_NEEDED" value="1024" />
 	<loadproperties srcfile="productinfo.properties" />
 	<renderer classname="com.bosssoft.platform.installer.wizard.gui.StepListRenderer" />
@@ -60,53 +60,48 @@
 		   	<nextstep default="03" />
 		</step>
 		
-		<step id="03" desc="Setbosssofthome">
-			<!--<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.BossHomeChoosePanel" />-->
-			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchBossHomePanel" />
+		<step id="03" desc="rollbackdigest" 
+			  interceptor="com.bosssoft.install.windows.patch.event.RollbackDigestInterceptor">
+			<gui setuppanel="com.bosssoft.install.windows.patch.gui.RollbackDigestPanel" />
 		   <nextstep default="04" />
 		</step>
 		
-		<step id="04" desc="reloadLog">
-			<action name="reloadLog"
-				classname="com.bosssoft.install.windows.patch.action.ReloadLog" />
-				<nextstep default="05" />
-		</step>
-	
-		<step id="05" desc="rollbackdigest" 
-			  interceptor="com.bosssoft.install.windows.patch.event.RollbackDigestInterceptor">
-			<gui setuppanel="com.bosssoft.install.windows.patch.gui.RollbackDigestPanel" />
-		   <nextstep default="06" />
+		<step id="04" desc="Setbosssofthome" 
+			  interceptor="com.bosssoft.install.windows.patch.event.SetBossHomeInterceptor">
+			<!--<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.BossHomeChoosePanel" />-->
+			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchBossHomePanel" />
+		   <nextstep default="05" />
 		</step>
 		
-		<step id="06" desc="ConfigDatasource"
+		<step id="05" desc="ConfigDatasource"
 			  interceptor="com.bosssoft.install.windows.patch.event.SetBossHomeInterceptor">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.ConfigDBPanel" />
 			<nextstep discriminator="${IS_UPDATE}">
-				<branch id="true" stepid="07" />
-				<branch id="false" stepid="071" />
+				<branch id="true" stepid="06" />
+				<branch id="false" stepid="061" />
 			</nextstep>
 		</step>
 		
 		
-		<step id="07" desc="Installing" auto="true">
+		<step id="06" desc="Installing" auto="true">
 			<!---<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel" />-->
 			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchingPanel" />
 			<actionscall id="install" />
-			<nextstep default="08" />
+			<nextstep default="07" />
 		</step>
 		
-		<step id="071" desc="rollback" auto="true">
+		<step id="061" desc="rollback" auto="true">
 			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchingPanel"/>
 		    <actionscall id="rollback" />
-			<nextstep default="081" />
+			<nextstep default="071" />
 		</step>
 		
-		<step id="08" desc="Finished">
+		<step id="07" desc="Finished">
 			 <!--<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchFinishedPanel" /> -->
 		  <gui setuppanel="com.bosssoft.install.windows.patch.gui.UpdateFinishedPanel" />
 		</step>
 		
-		<step id="081" desc="Finished">
+		<step id="071" desc="Finished">
 			 <!--<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchFinishedPanel" /> -->
 		  <gui setuppanel="com.bosssoft.install.windows.patch.gui.RollbackFinishedPanel" />
 		</step>
@@ -116,27 +111,28 @@
 	<actions id="install">
 		
 		<echo message="loading update config...." />
-		<!--åŠ è½½è¡¥ä¸é…ç½®æ–‡ä»¶-->
+		<!--¼ÓÔØ²¹¶¡ÅäÖÃÎÄ¼þ-->
 		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadConfig" scale="50">
 		</action>
 		
 		<echo message="checking update...." />
-		<!--æ›´æ–°æ£€æŸ¥-->
+		<!--¸üÐÂ¼ì²é-->
 		<action name="check update" classname="com.bosssoft.install.windows.patch.action.CheckUpdate" scale="50">
 		</action>
-		<!--æ›´æ–°æ£€æŸ¥é€šè¿‡æ‰å…è®¸æ›´æ–°-->
-			<!--å¤‡ä»½-->
+		<!--¸üÐÂ¼ì²éÍ¨¹ý²ÅÔÊÐí¸üÐÂ-->
+			<!--±¸·Ý-->
 			        <echo message="backup Product....." />
 				    <action name="Backup Product"
 						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
-						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
+						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/nginx.conf,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
+						<parameter name="BACKUP_DIR"  value="D:/test/backup"/>
 					</action>
-					<!--æ›´æ–°åº”ç”¨-->
+					<!--¸üÐÂÓ¦ÓÃ-->
 					<echo message="update Product....." />
 					<action name="Update Product"
 						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
 			     
-			       <!--åˆå§‹åŒ–åº”ç”¨é…ç½®ï¼ˆå¯é€‰ï¼‰-->
+			       <!--³õÊ¼»¯Ó¦ÓÃÅäÖÃ£¨¿ÉÑ¡£©-->
 				   <action name="Init App Config"
 						classname="com.bosssoft.install.windows.patch.action.InitAppConf" >
 				    <parameter name="INIT_FILES"  value="${INSTALL_ROOT}/Initconfig/configInit.properties"/>
@@ -145,25 +141,22 @@
 				   <if>
 			         <equals arg1="${DB_IS_INIT}" arg2="true" />
 			          <then>
-				      <!--æ•°æ®åº“åˆå§‹åŒ–-->
+				      <!--Êý¾Ý¿â³õÊ¼»¯-->
 		              <action name="init DB" classname="com.bosssoft.install.windows.patch.action.InitDB"
 			              desc="init DB" scale="5">
 		              </action>
 			          </then>
 		           </if>
 			       
-			        <!--æ›´æ–°ç‰ˆæœ¬ä¿¡æ¯-->
+			       
+			        <!--¸üÐÂ°æ±¾ÐÅÏ¢-->
 			            <action name="Update Version"
 						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
 					
-					<!--å®Œå–„æ›´æ–°-->
+					<!--ÍêÉÆ¸üÐÂ-->
 					<action name="Finished Patch..."
 						 classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />	
 	              
-	              <!--è®°å½•åº”ç”¨çš„æ›´æ–°æ—¥å¿—-->
-	              <echo message="record update log..." />
-				<action name="record update log"
-						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
 	</actions>
 	
 	

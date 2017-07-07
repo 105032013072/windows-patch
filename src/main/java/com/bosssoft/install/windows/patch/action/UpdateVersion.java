@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class UpdateVersion implements IAction{
 		if("true".equals(context.getStringValue("IS_ROLLBACK")))return;
 		
 		logger.info("update version.....");
+		
 		String patchVersion=PatchFileManager.getPatchHome()+File.separator+"version.xml";
 		try{
 			SAXReader reader = new SAXReader();
@@ -69,7 +71,6 @@ public class UpdateVersion implements IAction{
 			 bw.write (appelement.asXML());
 			 bw.close();
 
-			 Recorder.createFileLog(file);
 			 logger.debug("Update Product: create  new app version file "+file);
 		}catch(Exception e){
 			throw new InstallException("faild to create app version file because "+e);
@@ -103,7 +104,6 @@ public class UpdateVersion implements IAction{
 		    xmlWriter.write(document);
 		    xmlWriter.close();
 		
-		Recorder.editeFileLog(file);
 		logger.debug("Update Product: update the version infomation of app "+file);
 
 		}catch(Exception e){
@@ -114,7 +114,7 @@ public class UpdateVersion implements IAction{
 
 	private void updateProductVersion(Element product, IContext context) {
            try {
-        	   String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
+        	String file=PatchFileManager.getPatchProdcutVersionFile(context);
    			SAXReader reader = new SAXReader();
    			Document document = reader.read(file);
    	       Node n= document.selectSingleNode("product/version");
@@ -127,7 +127,6 @@ public class UpdateVersion implements IAction{
    		    xmlWriter.write(document);
    		    xmlWriter.close();
    		
-   		    Recorder.editeFileLog(file);
    		    logger.debug("Update Product: update the version infomation of product "+file);
 		} catch (Exception e) {
 			throw new InstallException("faild to update Product version because "+e);

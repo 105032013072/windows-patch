@@ -68,10 +68,7 @@ public class ExceptionProcessor {
 	
 	
 	private void doFinish(Exception e, IContext context) {
-		 Recorder.rollBackLog(e);//操作日志
-		 context.setValue("PATCH_LOG", Recorder.getPatchLog());
 		 context.setValue("IS_ROLLBACK", true);
-		
 	}
 
 	private void rollback(IContext context,Map params) {

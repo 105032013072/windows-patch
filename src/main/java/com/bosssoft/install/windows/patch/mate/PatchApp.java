@@ -14,6 +14,10 @@ public class PatchApp {
    
    private Boolean isInstalled;
    
+   private String serverDeployDir;
+   
+   private String serverPort;
+   
    public void setExitAppInfo(String appVersion,String platformName,String platformVersion){
 		exitApp.setAppversion(appVersion);
 		exitApp.setPlatformName(platformName);
@@ -71,6 +75,22 @@ public void setExitApp(ExitApp exitApp) {
 
 public List<IType> getPatchFiles() {
 	return patchFiles;
+}
+
+public String getServerDeployDir() {
+	return serverDeployDir;
+}
+
+public void setServerDeployDir(String serverDeployDir) {
+	this.serverDeployDir = serverDeployDir;
+}
+
+public String getServerPort() {
+	return serverPort;
+}
+
+public void setServerPort(String serverPort) {
+	this.serverPort = serverPort;
 } 
 
 

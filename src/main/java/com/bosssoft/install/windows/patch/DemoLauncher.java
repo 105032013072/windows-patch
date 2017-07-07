@@ -13,11 +13,7 @@ public class DemoLauncher implements Constants {
 
 
 	public static void main(String[] args) {
-		try {
-			//设置log4j的相对路径 
-			/*String workDir=PatchFileManager.getPatchWordDir()+"logging";
-			System.setProperty ("WORKDIR", workDir);*/
-			
+		try {		
 			Launcher launcher = new Launcher();
 			launcher.run(args);
 		} catch (LaunchException e) {

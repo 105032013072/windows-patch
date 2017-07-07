@@ -6,14 +6,16 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import com.bosssoft.install.windows.patch.mate.PatchApp;
 import com.bosssoft.install.windows.patch.mate.ResourceType;
@@ -22,58 +24,66 @@ import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
-import com.bosssoft.platform.installer.wizard.util.XmlUtil;
+import com.thoughtworks.xstream.io.xml.SaxWriter;
 
 public class LoadConfig implements IAction{
 
 	transient Logger logger = Logger.getLogger(getClass());
 	public void execute(IContext context, Map params) throws InstallException {
 		String patchConfig=PatchFileManager.getPatchConfig();
-	  parserConfig(context,patchConfig);	
+	    parserConfig(context,patchConfig);	
 	}
 
-	private void parserConfig(IContext context, String patchConfig) {
+	private void parserConfig(IContext context, String patchConfig)  {
 		try {
 			//根据补丁配置文件中的信息构建对应的对象，放到context中
 			List<PatchApp> list=new ArrayList<PatchApp>();
-			Document doc= XmlUtil.getDocument(new File(patchConfig));
-			Elements prodcut = XmlUtil.findElements(doc, "product");
-			context.setValue("PRODUCT_NAME", prodcut.attr("name"));
-			InitProducConf(context);//加载该产品的安装版本信息
-			Iterator<Element> it=prodcut.select("app").iterator();
+			SAXReader reader=new SAXReader();
+			Document doc=reader.read(new File(patchConfig));
+			Element prodcut = doc.getRootElement();
+			context.setValue("PRODUCT_NAME", prodcut.attributeValue("name"));
+			Map<String,String> appInfo=InitProducConf(context);//加载该产品的安装版本信息
+			Iterator<Element> it=prodcut.elementIterator("app");
 			while(it.hasNext()){
 				Element appLabel=it.next();
-				PatchApp app=constructApp(appLabel,context);
+				PatchApp app=constructApp(appLabel,context,appInfo);
 				list.add(app);
 			}
 			context.setValue("PATCH_APPS", list);
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new InstallException("faile to parser patch config "+patchConfig,e);
 		}
 		
 		
 	}
-  private void InitProducConf(IContext context) {
-		String filepath=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_version.xml";
+  private Map<String,String> InitProducConf(IContext context) {
+		String filepath=PatchFileManager.getPatchProdcutVersionFile(context);
 		File file=new File(filepath);
+		Map<String,String> appInfo=new HashMap<String, String>();
 		try{
-			Document doc= XmlUtil.getDocument(file);
-			Elements prodcut = XmlUtil.findElements(doc, "product");
-			String version=prodcut.select("version").text();
-			String installDir=prodcut.select("installDir").text();
-			String deployDir=prodcut.select("deployDir").text();
-			String serverPort=prodcut.select("serverPort").text();
-			context.setValue("PRODUCT_VERSION", version);
-			context.setValue("PRODUCT_INSTALL_DIR", installDir);
-			context.setValue("APP_DEPLOY_DIR", deployDir);
-			context.setValue("APP_SERVER_PORT", serverPort);
+			SAXReader reader=new SAXReader();
+			Document doc= reader.read(file);
+			Element prodcut = doc.getRootElement();
+			String version=prodcut.elementText("version");
+			String installDir=prodcut.elementText("installDir");
 			context.setValue("IP", getIP());
+			
+			//加载每个应用的部署路径和端口号
+			Element applications=prodcut.element("applications");
+			Iterator<Element> it=applications.elementIterator("application");
+			
+			while(it.hasNext()){
+				Element application=it.next();
+				String info=application.elementText("deployDir")+","+application.elementText("serverPort");
+				appInfo.put(application.elementText("appName"), info);
+			}
+			
 		}catch(Exception e){
 			String message="cannot get the information of version about already installed product,please make sure the external path is correct ";
 			throw new InstallException(message);
 		}
-		
+		return appInfo;
 		
 	}
 
@@ -104,32 +114,42 @@ public class LoadConfig implements IAction{
  * 构建需要更新的应用对象
  * @param appLabel
  * @param context 
+ * @param appInfo 
  * @return
  */
-	private PatchApp constructApp(Element appLabel, IContext context) {
+	private PatchApp constructApp(Element appLabel, IContext context, Map<String, String> appInfo) {
 		PatchApp app=new PatchApp();
 		parserExitVersion(appLabel,context,app);//获取已安装版本信息
 		
 		//解析补丁文件信息
-		String appName=appLabel.attr("name");
-	    
+		String appName=appLabel.attributeValue("name");
 	    app.setAppName(appName);
-	    Iterator<Element> it =appLabel.children().iterator();
+	    
+	    String info=appInfo.get(appName);
+	    if(info==null){//新增的应用无部署信息
+	    	
+	    }else{
+	    	String []ai=info.split(",");
+	  	    app.setServerDeployDir(ai[0]);
+	  	    app.setServerPort(ai[1]);
+	    }
+	    
+	    Iterator<Element> it =appLabel.elementIterator();
 	    while(it.hasNext()){
 			Element r=it.next();
-			String tagName=r.tagName();
+			String tagName=r.getQualifiedName();
 			if("war".equals(tagName)){
 				WarType warType=new WarType();
 				warType.setIsInstalled(app.getIsInstalled());
-				warType.setName(r.attr("name"));
-				warType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attr("name"));
+				warType.setName(r.attributeValue("name"));
+				warType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attributeValue("name"));
 				warType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+File.separator);
 				warType.setAppName(appName);
 				app.addPatchFile(warType);
 			}else{
 				ResourceType resourceType=new ResourceType();
-				resourceType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attr("name"));
-			    resourceType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+r.attr("file")+File.separator+r.attr("name"));
+				resourceType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attributeValue("name"));
+			    resourceType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+r.attributeValue("file")+File.separator+r.attributeValue("name"));
 			   if(new File(resourceType.getDestPath()).exists()) resourceType.setIsInstalled(true);
 			   else resourceType.setIsInstalled(false);
 			    resourceType.setAppName(appName);
