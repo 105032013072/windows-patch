@@ -14,11 +14,9 @@ import com.bosssoft.platform.installer.io.operation.exception.OperationException
 public class ResourceType implements IType{
 	private String sourcePath;
 	private String destPath;
-	private Boolean isInstalled;
-    private String appName;
     transient Logger logger = Logger.getLogger(getClass());
 	
-	public void update(IContext context) throws InstallException{
+	public void update(IContext context,PatchApp patchApp) throws InstallException{
 		if (this.sourcePath == null) {
 			throw new InstallException("The src attribute must be present.");
 		}
@@ -31,9 +29,6 @@ public class ResourceType implements IType{
 			throw new InstallException("src " + sourcePath + " does not exist.");
 		}
 		
-		if(destFile.exists()) isInstalled=true;
-		else isInstalled=false;
-		
 		try {
 			FileUtils.copy(srcFile, destFile, null, FileOperationMessageListener.INSTANCE);
 		    logger.debug("Update Product: copy "+srcFile+" to "+destPath);
@@ -42,7 +37,7 @@ public class ResourceType implements IType{
 		}
 	}
 
-  public void record4Rollback(IContext context) throws InstallException{
+  public void record4Rollback(IContext context,PatchApp patchApp) throws InstallException{
 		
 	}
 	
@@ -62,21 +57,7 @@ public class ResourceType implements IType{
 		this.destPath = destPath;
 	}
 
-	public Boolean getIsInstalled() {
-		return isInstalled;
-	}
 
-	public void setIsInstalled(Boolean isInstalled) {
-		this.isInstalled = isInstalled;
-	}
-
-	public String getAppName() {
-		return appName;
-	}
-
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
 
 	
 

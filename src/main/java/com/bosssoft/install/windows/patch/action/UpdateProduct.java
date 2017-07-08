@@ -34,9 +34,9 @@ public class UpdateProduct implements IAction{
 		for (PatchApp patchApp : list) {
 			List<IType> patchFiles=patchApp.getPatchFiles();
 			for (IType iType : patchFiles) {
-				iType.record4Rollback(context);
+				iType.record4Rollback(context,patchApp);
 		        try {
-		        	iType.update(context);
+		        	iType.update(context,patchApp);
 				} catch (Exception e) {
 					logger.error(e);
 					ExceptionProcessor processor=new ExceptionProcessor();

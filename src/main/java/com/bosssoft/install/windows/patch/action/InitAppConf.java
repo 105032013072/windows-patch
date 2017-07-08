@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -17,6 +18,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
+import com.bosssoft.install.windows.patch.mate.PatchApp;
 import com.bosssoft.install.windows.patch.util.ExceptionProcessor;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
@@ -39,7 +41,7 @@ public class InitAppConf implements IAction{
 				p.load(fis);
 				fis.close();
 				String appName=p.getProperty("APP_NAME");
-				String appConfig=context.getStringValue("APP_DEPLOY_DIR")+p.getProperty("APP_CONFIG");
+				String appConfig=getServerDeployDir(context,appName)+p.getProperty("APP_CONFIG");
 				String conftemp=ExpressionParser.parseString(p.getProperty("CONFIG_TEMPLET"));
 				String tempVars=p.getProperty("TEMPLET_variables");
 				doinit(appConfig,conftemp,tempVars,context);//初始化应用服务器下的配置文件
@@ -64,7 +66,19 @@ public class InitAppConf implements IAction{
 	
 	}
 	
-    private void doinit(String configFile,String tempFile,String tempVars,IContext context){
+    private String getServerDeployDir(IContext context, String appName) {
+    	List<PatchApp> list=(List<PatchApp>) context.getValue("PATCH_APPS");
+		String dir=null;
+    	for (PatchApp patchApp : list) {
+			if(appName.equals(patchApp.getAppName())){
+				dir=patchApp.getServerDeployDir();
+				break;
+			}
+		}
+    	return dir;
+	}
+
+	private void doinit(String configFile,String tempFile,String tempVars,IContext context){
         File f=new File(tempFile);
 		
 		Properties p = new Properties();

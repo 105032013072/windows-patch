@@ -17,7 +17,6 @@ public class PatchApp {
    private String serverDeployDir;
    
    private String serverPort;
-   
    public void setExitAppInfo(String appVersion,String platformName,String platformVersion){
 		exitApp.setAppversion(appVersion);
 		exitApp.setPlatformName(platformName);
@@ -91,7 +90,8 @@ public String getServerPort() {
 
 public void setServerPort(String serverPort) {
 	this.serverPort = serverPort;
-} 
+}
+ 
 
 
 }

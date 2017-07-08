@@ -66,7 +66,6 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		this.finishLabel.setOpaque(false);
 		this.finishLabel.setEditable(false);
 		this.finishLabel.setBounds(new Rectangle(37, 35, 373, 33));
-		this.finishLabel.setText(getshowContent());
 		
 		this.labelLog.setText("查看完整的操作日志");
 		this.labelLog.setBounds(new Rectangle(330, 345, 373, 33));
@@ -76,11 +75,13 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		this.setupPane.add(this.line, null);
 		this.setupPane.add(this.finishLabel, null);
 		this.setupPane.add(this.labelLog, null);
+		
+		
 	}
 
 
 
-	private String getshowContent() throws Exception {
+	private String getshowContent()  {
 		String msg=null;
 		if("true".equals(getContext().getStringValue("IS_ROLLBACK"))){
 			msg=I18nUtil.getString("FINISH.UPDATE.ROLLBACK.SHOW");
@@ -91,13 +92,18 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 	}
 
 	//获取产品新版本
-	private String getProductVersion() throws Exception {
-	   String versionFile=PatchFileManager.getPatchProdcutVersionFile(getContext());
-	   SAXReader reader=new SAXReader();
-	   Document doc =reader.read(new File(versionFile));
-	   Element root=doc.getRootElement();
-	   
-	   return root.elementText("version");
+	private String getProductVersion() {
+		String version=null;
+		try {
+			 String versionFile=PatchFileManager.getPatchProdcutVersionFile(getContext());
+			 SAXReader reader=new SAXReader();
+			 Document doc =reader.read(new File(versionFile));
+			 Element root=doc.getRootElement();
+			 version=root.elementText("version");
+		} catch (Exception e) {
+			throw new InstallException(e);
+		}
+	  return version;
 	}
 
 	public void afterShow() {
@@ -120,6 +126,8 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		controlPane.setButtonVisible("previous", false);
 		controlPane.setDefaultButton("finish");
 	
+		this.finishLabel.setText(getshowContent());
+		
 		this.labelLog.addMouseListener(new MouseListener() {
 			
 			public void mouseReleased(MouseEvent arg0) {

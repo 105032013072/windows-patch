@@ -173,7 +173,7 @@ public class BackupProduct implements IAction{
 		
 		for (PatchApp patchApp : list) {
 			if(patchApp.getIsInstalled()){
-				String dest=context.getStringValue("APP_DEPLOY_DIR")+File.separator+patchApp.getAppName();
+				String dest=patchApp.getServerDeployDir()+File.separator+patchApp.getAppName();
 				String source=PatchFileManager.getPatchBackupDir(context, patchApp.getAppName())+patchApp.getAppName();
 				Element dire=DocumentHelper.createElement("app");
 				dire.addAttribute("appName", patchApp.getAppName());

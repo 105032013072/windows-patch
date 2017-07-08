@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -68,6 +69,8 @@ public class LoadConfig implements IAction{
 			String version=prodcut.elementText("version");
 			String installDir=prodcut.elementText("installDir");
 			context.setValue("IP", getIP());
+			context.setValue("PRODUCT_VERSION", version);
+			context.setValue("PRODUCT_INSTALL_DIR", installDir);
 			
 			//加载每个应用的部署路径和端口号
 			Element applications=prodcut.element("applications");
@@ -117,7 +120,7 @@ public class LoadConfig implements IAction{
  * @param appInfo 
  * @return
  */
-	private PatchApp constructApp(Element appLabel, IContext context, Map<String, String> appInfo) {
+	private PatchApp constructApp(Element appLabel, IContext context, Map<String, String> appInfoMap) {
 		PatchApp app=new PatchApp();
 		parserExitVersion(appLabel,context,app);//获取已安装版本信息
 		
@@ -125,9 +128,26 @@ public class LoadConfig implements IAction{
 		String appName=appLabel.attributeValue("name");
 	    app.setAppName(appName);
 	    
-	    String info=appInfo.get(appName);
+	    String info=appInfoMap.get(appName);
 	    if(info==null){//新增的应用无部署信息
-	    	
+	    	String appSvrInfo=context.getStringValue("APP_SERVER_DEPLOY_DIR");
+	    	if(appSvrInfo!=null){//有配置部署信息
+	    		app.setServerDeployDir(appSvrInfo);
+	    		app.setServerPort(context.getStringValue("APP_SERVER_PORT"));
+	    	}else{//没有就取任意已安装应用的部署信息
+	    		Iterator iter=appInfoMap.entrySet().iterator();
+	    		while(iter.hasNext()){
+	    			Map.Entry<String,String> entry=(Entry) iter.next();
+	    			String []ai=entry.getValue().split(",");
+	    			app.setServerDeployDir(ai[0]);
+	    	  	    app.setServerPort(ai[1]);
+	    	  	    
+	    	  	    //对于新增应用若是需要初始化配置文件需要这些变量
+	    	  	    context.setValue("APP_SERVER_DEPLOY_DIR", ai[0]);
+	    	  	    context.setValue("APP_SERVER_PORT", ai[0]); 
+	    	  	    break;
+	    		}
+	    	}
 	    }else{
 	    	String []ai=info.split(",");
 	  	    app.setServerDeployDir(ai[0]);
@@ -140,19 +160,14 @@ public class LoadConfig implements IAction{
 			String tagName=r.getQualifiedName();
 			if("war".equals(tagName)){
 				WarType warType=new WarType();
-				warType.setIsInstalled(app.getIsInstalled());
 				warType.setName(r.attributeValue("name"));
 				warType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attributeValue("name"));
-				warType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+File.separator);
-				warType.setAppName(appName);
+				warType.setDestPath(app.getServerDeployDir()+File.separator);
 				app.addPatchFile(warType);
 			}else{
 				ResourceType resourceType=new ResourceType();
 				resourceType.setSourcePath(PatchFileManager.getPathResourceDir(appName)+File.separator+r.attributeValue("name"));
-			    resourceType.setDestPath(context.getStringValue("APP_DEPLOY_DIR")+r.attributeValue("file")+File.separator+r.attributeValue("name"));
-			   if(new File(resourceType.getDestPath()).exists()) resourceType.setIsInstalled(true);
-			   else resourceType.setIsInstalled(false);
-			    resourceType.setAppName(appName);
+			    resourceType.setDestPath(app.getServerDeployDir()+r.attributeValue("file")+File.separator+r.attributeValue("name"));
 			    app.addPatchFile(resourceType);
 			}
 		}
@@ -161,7 +176,7 @@ public class LoadConfig implements IAction{
 	}
 
 	private void parserExitVersion(Element appLabel, IContext context, PatchApp app) {
-	String filePath=context.getStringValue("BOSSSOFT_HOME")+File.separator+appLabel.attr("name")+File.separator+"version.xml";
+	String filePath=context.getStringValue("BOSSSOFT_HOME")+File.separator+appLabel.attributeValue("name")+File.separator+"version.xml";
 	File versionFile=new File(filePath);
 	if(!versionFile.exists()){//对应的版本信息文件不存在说明该应用是新增
        app.setIsInstalled(false);
@@ -170,12 +185,13 @@ public class LoadConfig implements IAction{
  		app.setIsInstalled(true);
  	}
 	try{
-		Document doc = XmlUtil.getDocument(new File(filePath));
-		Element eleApp = XmlUtil.findElements(doc, "app").get(0);
-		String appVersion=eleApp.attr("version");
-		Element platform=eleApp.select("platform").get(0);
-		String platformName=platform.attr("name");
-		String platformVersion=platform.attr("version");
+		SAXReader reader=new SAXReader();
+		Document doc=reader.read(new File(filePath));
+		Element eleApp=doc.getRootElement();
+		String appVersion=eleApp.attributeValue("version");
+		Element platform=eleApp.element("platform");
+		String platformName=platform.attributeValue("name");
+		String platformVersion=platform.attributeValue("version");
 		app.setExitAppInfo(appVersion, platformName, platformVersion);
 	    
 	}catch(Exception e){

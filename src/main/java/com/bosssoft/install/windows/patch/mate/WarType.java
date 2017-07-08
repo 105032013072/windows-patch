@@ -19,31 +19,34 @@ import com.bosssoft.platform.installer.io.FileUtils;
 import com.bosssoft.platform.installer.io.operation.exception.OperationException;
 
 public class WarType implements IType{
-	private String appName;
+	
 	private String name;
 	private String sourcePath;
 	private String destPath;
-	 private Boolean isInstalled;
 	 transient Logger logger = Logger.getLogger(getClass());
 
-	public void update(IContext context) throws InstallException{
+	public void update(IContext context,PatchApp patchApp) throws InstallException{
+		String appName=patchApp.getAppName();
+		String serverDeployDir=patchApp.getServerDeployDir();
+		String serverPort=patchApp.getServerPort();
 		
-		if(isInstalled)
-			copyToSvr(context);
-		else deploy(context);//部署新的war	
+		if(patchApp.getIsInstalled())
+			copyToSvr(context,appName);
+		else deploy(context,appName,serverDeployDir,serverPort);//部署新的war	
+	
 	}
-	private void deploy(IContext context) {
-		copyToSvr(context);//将war解压到应用服务器下
-		copyToBossHome(context);//配置文件拷贝到BossHome下
-		configNginx(context);//nginx配置转发
-		editeUninstall(context);//修改uninstall.bat或者uninstall.sh
+	private void deploy(IContext context, String appName, String serverDeployDir, String serverPort) {
+		copyToSvr(context,appName);//将war解压到应用服务器下
+		copyToBossHome(context,serverDeployDir,appName);//配置文件拷贝到BossHome下
+		configNginx(context,appName,serverPort);//nginx配置转发
+		editeUninstall(context,appName);//修改uninstall.bat或者uninstall.sh
 	}
 	
-	private void editeUninstall(IContext context) {
-		if("true".equals(context.getStringValue("IS_WINDOWS"))) editeBat(context);
-		else editeSh(context);
+	private void editeUninstall(IContext context, String appName) {
+		if("true".equals(context.getStringValue("IS_WINDOWS"))) editeBat(context,appName);
+		else editeSh(context,appName);
 	}
-	private void editeSh(IContext context) {
+	private void editeSh(IContext context, String appName) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"uninstall.sh";
 		StringBuffer add=new StringBuffer(System.lineSeparator());
 		//删除应用服务器下
@@ -62,7 +65,7 @@ public class WarType implements IType{
 		
 	    logger.debug("Update Product: modify "+sourceFile);
 	}
-	private void editeBat(IContext context) {
+	private void editeBat(IContext context, String appName) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"uninstall.bat";
 		String sourceContext=PatchUtil.readFile(sourceFile,"GBK");
 		int index=sourceContext.indexOf("rd");
@@ -88,27 +91,26 @@ public class WarType implements IType{
 		
 		
 	}
-	private void configNginx(IContext context) {
+	private void configNginx(IContext context, String appName, String serverPort) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"nginx-1.13.0"+File.separator+"conf"+File.separator+"nginx.conf";
 	    String sourceContent=PatchUtil.readFile(sourceFile);
 	    String tempPath=PatchFileManager.getPacthTemplateDir()+File.separator+"nginx_template.txt";
 	    String tempContext=PatchUtil.readFile(tempPath);
 	    int index=sourceContent.indexOf("location",sourceContent.indexOf("server"));
-	    String port=context.getStringValue("APP_SERVER_PORT");
 	    String tc=tempContext.replace("%app_name%", appName)
 	              .replace("%ip%","127.0.0.1")
-	              .replace("%port%", port)+System.lineSeparator();
+	              .replace("%port%", serverPort)+System.lineSeparator();
 	    String result=(new StringBuffer(sourceContent).insert(index, tc)).toString();
 	    PatchUtil.writeToFile(result, sourceFile);
 	    
 	    logger.debug("Update Product: modify "+sourceFile);
 	}
-	private void copyToBossHome(IContext context) {
+	private void copyToBossHome(IContext context, String serverDeployDir, String appName) {
 		String homePath=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName+File.separator+"conf";
 		File homedir=new File(homePath);
 		if(!homedir.exists())
 			homedir.mkdirs();
-		String copyFiledir=context.getStringValue("APP_DEPLOY_DIR")+File.separator+appName+File.separator+"WEB-INF"+File.separator+"classes";
+		String copyFiledir=serverDeployDir+File.separator+appName+File.separator+"WEB-INF"+File.separator+"classes";
 		//将配置文件拷贝到bosssoft_home目录下
 		File[] files = new File(copyFiledir).listFiles();
 		for (File file : files) {
@@ -130,8 +132,9 @@ public class WarType implements IType{
 	/**
 	 * war包拷贝到应用服务器下（若已存在先删除）
 	 * @param context
+	 * @param appName 
 	 */
-	private void copyToSvr(IContext context) {
+	private void copyToSvr(IContext context, String appName) {
 		File destAppDir = new File(destPath, appName);
 		File sourceFile=new File(sourcePath);
 		if(destAppDir.exists()){
@@ -155,9 +158,10 @@ public class WarType implements IType{
 		
 	}
 	
-   public void record4Rollback(IContext context) throws InstallException{
+   public void record4Rollback(IContext context,PatchApp patchApp) throws InstallException{
 		//新增的应用需要记录回滚时要删除的文件
-	   if(!isInstalled){
+	   if(!patchApp.getIsInstalled()){
+		   String appName=patchApp.getAppName();
 			//记录删除应用服务器下的程序
 		   String path=destPath+File.separator+appName;
 		   Recorder.rollbackDeleteApp(path, appName);
@@ -192,19 +196,6 @@ public class WarType implements IType{
 	public void setDestPath(String destPath) {
 		this.destPath = destPath;
 	}
-	public Boolean getIsInstalled() {
-		return isInstalled;
-	}
-	public void setIsInstalled(Boolean isInstalled) {
-		this.isInstalled = isInstalled;
-	}
-	public String getAppName() {
-		return appName;
-	}
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
-	
     
 	
     
