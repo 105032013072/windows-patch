@@ -139,7 +139,7 @@ public class BackupProduct implements IAction{
 				Element e=DocumentHelper.createElement("file");
 				e.addAttribute("dest", context.getStringValue("BOSSSOFT_HOME")+File.separator+avp);
 				String rootDir=PatchFileManager.getPatchBackupDir(context, patchApp.getAppName());
-				e.addAttribute("source", rootDir+File.separator+"version"+File.separator+avp);
+				e.addAttribute("source", rootDir+File.separator+"version.xml");
 				replaceEle.add(e);
 			}
 		}

@@ -128,13 +128,11 @@ public class LoadConfig implements IAction{
 		String appName=appLabel.attributeValue("name");
 	    app.setAppName(appName);
 	    
-	    String info=appInfoMap.get(appName);
+ 	    String info=appInfoMap.get(appName);
 	    if(info==null){//新增的应用无部署信息
 	    	String appSvrInfo=context.getStringValue("APP_SERVER_DEPLOY_DIR");
-	    	if(appSvrInfo!=null){//有配置部署信息
-	    		app.setServerDeployDir(appSvrInfo);
-	    		app.setServerPort(context.getStringValue("APP_SERVER_PORT"));
-	    	}else{//没有就取任意已安装应用的部署信息
+	    	if("".equals(appSvrInfo)||appSvrInfo==null){//有配置部署信息
+	    		//没有就取任意已安装应用的部署信息
 	    		Iterator iter=appInfoMap.entrySet().iterator();
 	    		while(iter.hasNext()){
 	    			Map.Entry<String,String> entry=(Entry) iter.next();
@@ -144,9 +142,12 @@ public class LoadConfig implements IAction{
 	    	  	    
 	    	  	    //对于新增应用若是需要初始化配置文件需要这些变量
 	    	  	    context.setValue("APP_SERVER_DEPLOY_DIR", ai[0]);
-	    	  	    context.setValue("APP_SERVER_PORT", ai[0]); 
+	    	  	    context.setValue("APP_SERVER_PORT", ai[1]); 
 	    	  	    break;
 	    		}
+	    	}else{
+	    		app.setServerDeployDir(appSvrInfo);
+	    		app.setServerPort(context.getStringValue("APP_SERVER_PORT"));
 	    	}
 	    }else{
 	    	String []ai=info.split(",");
