@@ -13,12 +13,14 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 import com.bosssoft.install.windows.patch.mate.PatchApp;
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
+import com.bosssoft.install.windows.patch.util.PatchUtil;
 import com.bosssoft.platform.installer.core.IContext;
 import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
@@ -47,18 +49,16 @@ public class RecordUpdateLog implements IAction{
 				SAXReader reader=new SAXReader();
 				doc=reader.read(upgradeFile);
 			}else{
+				PatchUtil.createFile(upgradePath);
 				doc=DocumentHelper.createDocument();
 				Element root=DocumentHelper.createElement("upgrades");
          		doc.setRootElement(root);	
 			}
 			Element root=doc.getRootElement();
-			Element upgrad=DocumentHelper.createElement("upgrade");
-			upgrad.addElement("upgrade-time").addText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			upgrad.addElement("upgrade-version").addText(getVersion(appName,context));
-		    upgrad.addElement("result").addText(getResult(context));
-		    upgrad.addElement("logfile").addText(context.getStringValue("INSTALL_LOGFILE_PATH"));
-	        root.add(upgrad);
-	        
+			
+			Element ele=createUpgradEle(appName,context);
+			root.add(ele);
+
 	        //写入文件
 	        OutputFormat format =OutputFormat.createPrettyPrint(); 
 			  format.setEncoding("utf-8");//设置编码格式 
@@ -66,6 +66,14 @@ public class RecordUpdateLog implements IAction{
 	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(upgradePath),format);
 		    xmlWriter.write(doc);
 		    xmlWriter.close();
+	}
+	private Element createUpgradEle(String appName, IContext context) throws DocumentException {
+		Element upgrad=DocumentHelper.createElement("upgrade");
+		upgrad.addElement("upgrade-time").addText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		upgrad.addElement("upgrade-version").addText(getVersion(appName,context));
+	    upgrad.addElement("result").addText(getResult(context));
+	    upgrad.addElement("logfile").addText(context.getStringValue("INSTALL_LOGFILE_PATH"));
+		return upgrad;
 	}
 
 	//获取本次操作的执行结果
@@ -77,10 +85,16 @@ public class RecordUpdateLog implements IAction{
 
 	//获取应用新的版本号
 	private String getVersion(String appName, IContext context) throws DocumentException {
-		String versionFile=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName+File.separator+"version.xml";
+		String versionFile=PatchFileManager.getPatchVersionConf();
+		
 		SAXReader reader=new SAXReader();
 		Document doc=reader.read(versionFile);
-		return doc.getRootElement().attributeValue("version");
+		Element app=(Element) doc.getRootElement().selectSingleNode("app[@name='"+appName+"']");
+		String version="";
+		if(app!=null){
+			version=app.attributeValue("version");
+		}
+		return version;
 	}
 
 	public void rollback(IContext context, Map params) throws InstallException {

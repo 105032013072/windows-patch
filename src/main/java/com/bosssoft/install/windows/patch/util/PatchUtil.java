@@ -83,4 +83,17 @@ public class PatchUtil {
 				throw new InstallException("Failed to ConfigComponents", e);
 			}
 	}
+	
+	public static void createFile(String filePath){
+		File file=new File(filePath);
+		File parentFile=file.getParentFile();
+		if(!parentFile.exists()){
+			parentFile.mkdirs();
+		}
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+		   throw new InstallException(e);
+		}
+	}
 }

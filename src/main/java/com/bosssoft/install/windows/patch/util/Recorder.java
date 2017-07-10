@@ -79,6 +79,8 @@ public class Recorder {
 			}
         	root.add(delet);
         	
+        	
+        	if(!new File(path).exists()) PatchUtil.createFile(path);
         	OutputFormat format =OutputFormat.createPrettyPrint(); 
 			  format.setEncoding("utf-8");//设置编码格式 
 			  format.setNewLineAfterDeclaration(false);

@@ -27,7 +27,7 @@ import com.bosssoft.platform.installer.core.InstallException;
 import com.bosssoft.platform.installer.core.action.IAction;
 import com.thoughtworks.xstream.io.xml.SaxWriter;
 
-public class LoadConfig implements IAction{
+public class LoadUpdateConfig implements IAction{
 
 	transient Logger logger = Logger.getLogger(getClass());
 	public void execute(IContext context, Map params) throws InstallException {
@@ -59,7 +59,7 @@ public class LoadConfig implements IAction{
 		
 	}
   private Map<String,String> InitProducConf(IContext context) {
-		String filepath=PatchFileManager.getPatchProdcutVersionFile(context);
+		String filepath=PatchFileManager.getPatchProdcutInfoFile(context);
 		File file=new File(filepath);
 		Map<String,String> appInfo=new HashMap<String, String>();
 		try{

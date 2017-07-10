@@ -1,6 +1,7 @@
 package com.bosssoft.install.windows.patch.mate;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.plaf.PanelUI;
@@ -8,6 +9,12 @@ import javax.swing.plaf.PanelUI;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.net.SyslogAppender;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.install.windows.patch.util.PatchUtil;
@@ -38,20 +45,46 @@ public class WarType implements IType{
 	private void deploy(IContext context, String appName, String serverDeployDir, String serverPort) {
 		copyToSvr(context,appName);//将war解压到应用服务器下
 		copyToBossHome(context,serverDeployDir,appName);//配置文件拷贝到BossHome下
+		addToProductInfo(context,appName,serverDeployDir,serverPort);//产品的信息文件中增加新增应用的信息
 		configNginx(context,appName,serverPort);//nginx配置转发
-		editeUninstall(context,appName);//修改uninstall.bat或者uninstall.sh
+		editeUninstall(context,appName,serverDeployDir);//修改uninstall.bat或者uninstall.sh
 	}
 	
-	private void editeUninstall(IContext context, String appName) {
-		if("true".equals(context.getStringValue("IS_WINDOWS"))) editeBat(context,appName);
-		else editeSh(context,appName);
+	private void addToProductInfo(IContext context, String appName, String serverDeployDir, String serverPort) {
+	  try {
+		  String productInfoPath=PatchFileManager.getPatchProdcutInfoFile(context);
+		  SAXReader reader=new SAXReader();
+		  Document doc=reader.read(new File(productInfoPath));
+		  Element applications=doc.getRootElement().element("applications");
+		  Element app=DocumentHelper.createElement("application");
+		  app.addElement("appName").addText(appName);
+		  app.addElement("deployDir").addText(serverDeployDir);
+		  app.addElement("serverPort").addText(serverPort);
+		  applications.add(app);
+		  
+		  OutputFormat format =OutputFormat.createPrettyPrint(); 
+		  format.setEncoding("utf-8");//设置编码格式  
+		  format.setNewLineAfterDeclaration(false);
+	      XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(productInfoPath),format);
+
+	     xmlWriter.write(doc);
+	     xmlWriter.close();
+	} catch (Exception e) {
+	   throw new InstallException("faild to update "+PatchFileManager.getPatchProdcutInfoFile(context)+e);
 	}
-	private void editeSh(IContext context, String appName) {
+		
+		
+	}
+	private void editeUninstall(IContext context, String appName, String serverDeployDir) {
+		if("true".equals(context.getStringValue("IS_WINDOWS"))) editeBat(context,appName,serverDeployDir);
+		else editeSh(context,appName,serverDeployDir);
+	}
+	private void editeSh(IContext context, String appName, String serverDeployDir) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"uninstall.sh";
 		StringBuffer add=new StringBuffer(System.lineSeparator());
 		//删除应用服务器下
 		add.append("rm -rf ")
-		    .append(context.getStringValue("APP_DEPLOY_DIR"))
+		    .append(serverDeployDir)
 		    .append(File.separator)
 		    .append(appName)
 		    .append(System.lineSeparator());
@@ -65,14 +98,14 @@ public class WarType implements IType{
 		
 	    logger.debug("Update Product: modify "+sourceFile);
 	}
-	private void editeBat(IContext context, String appName) {
+	private void editeBat(IContext context, String appName, String serverDeployDir) {
 		String sourceFile=context.getStringValue("PRODUCT_INSTALL_DIR")+File.separator+"uninstall.bat";
 		String sourceContext=PatchUtil.readFile(sourceFile,"GBK");
 		int index=sourceContext.indexOf("rd");
 		StringBuffer add=new StringBuffer();
 		//删除应用服务器下
 		add.append("rd /s /q ")
-		    .append(context.getStringValue("APP_DEPLOY_DIR"))
+		    .append(serverDeployDir)
 		    .append(File.separator)
 		    .append(appName)
 		    .append(System.lineSeparator());
@@ -141,7 +174,7 @@ public class WarType implements IType{
 			try {
 				FileUtils.delete(destAppDir, null, null);
 			} catch (OperationException e) {
-				throw new InstallException(e.getMessage());
+				throw new InstallException(e);
 			}
 		}
 		
@@ -166,8 +199,12 @@ public class WarType implements IType{
 		   String path=destPath+File.separator+appName;
 		   Recorder.rollbackDeleteApp(path, appName);
 		   
-		   //记录删除bosshome下的目录
-		   path=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName;
+		   //记录删除bosshome下的配置文件
+		   path=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName+File.separator+"conf";
+		   Recorder.rollbackDeleteDir(path);
+		 
+		   //记录删除bosshome下的版本信息文件
+		   path=context.getStringValue("BOSSSOFT_HOME")+File.separator+appName+File.separator+"version.xml";
 		   Recorder.rollbackDeleteDir(path);
 	   }
 		

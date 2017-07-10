@@ -4,7 +4,7 @@
 	<variable name="VERSION_NUMBER" value="3.0" />
 	<variable name="EDITION" value="PE" />
 	<variable name="RUNNER_TYPE" value="install" />
-	<!-- °²×°´Ë²úÆ·ÐèÒªµÄ¿Õ¼ä£¬ÒÔMBÎªµ¥Î» -->
+	<!-- ï¿½ï¿½×°ï¿½Ë²ï¿½Æ·ï¿½ï¿½Òªï¿½Ä¿Õ¼ä£¬ï¿½ï¿½MBÎªï¿½ï¿½Î» -->
 	<variable name="DISK_NEEDED" value="1024" />
 	<loadproperties srcfile="productinfo.properties" />
 	<renderer classname="com.bosssoft.platform.installer.wizard.gui.StepListRenderer" />
@@ -111,28 +111,28 @@
 	<actions id="install">
 		
 		<echo message="loading update config...." />
-		<!--¼ÓÔØ²¹¶¡ÅäÖÃÎÄ¼þ-->
-		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadConfig" scale="50">
+		<!--ï¿½ï¿½ï¿½Ø²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½-->
+		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadUpdateConfig" scale="50">
 		</action>
 		
 		<echo message="checking update...." />
-		<!--¸üÐÂ¼ì²é-->
+		<!--ï¿½ï¿½ï¿½Â¼ï¿½ï¿½-->
 		<action name="check update" classname="com.bosssoft.install.windows.patch.action.CheckUpdate" scale="50">
 		</action>
-		<!--¸üÐÂ¼ì²éÍ¨¹ý²ÅÔÊÐí¸üÐÂ-->
-			<!--±¸·Ý-->
+		<!--ï¿½ï¿½ï¿½Â¼ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-->
+			<!--ï¿½ï¿½ï¿½ï¿½-->
 			        <echo message="backup Product....." />
 				    <action name="Backup Product"
 						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
 						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0/conf/nginx.conf,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
 						<parameter name="BACKUP_DIR"  value="D:/test/backup"/>
 					</action>
-					<!--¸üÐÂÓ¦ÓÃ-->
+					<!--ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½-->
 					<echo message="update Product....." />
 					<action name="Update Product"
 						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
 			     
-			       <!--³õÊ¼»¯Ó¦ÓÃÅäÖÃ£¨¿ÉÑ¡£©-->
+			       <!--ï¿½ï¿½Ê¼ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½-->
 				   <action name="Init App Config"
 						classname="com.bosssoft.install.windows.patch.action.InitAppConf" >
 				    <parameter name="INIT_FILES"  value="${INSTALL_ROOT}/Initconfig/configInit.properties"/>
@@ -141,7 +141,7 @@
 				   <if>
 			         <equals arg1="${DB_IS_INIT}" arg2="true" />
 			          <then>
-				      <!--Êý¾Ý¿â³õÊ¼»¯-->
+				      <!--ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Ê¼ï¿½ï¿½-->
 		              <action name="init DB" classname="com.bosssoft.install.windows.patch.action.InitDB"
 			              desc="init DB" scale="5">
 		              </action>
@@ -149,11 +149,11 @@
 		           </if>
 			       
 			       
-			        <!--¸üÐÂ°æ±¾ÐÅÏ¢-->
+			        <!--ï¿½ï¿½ï¿½Â°æ±¾ï¿½ï¿½Ï¢-->
 			            <action name="Update Version"
 						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
 					
-					<!--ÍêÉÆ¸üÐÂ-->
+					<!--ï¿½ï¿½ï¿½Æ¸ï¿½ï¿½ï¿½-->
 					<action name="Finished Patch..."
 						 classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />	
 	              

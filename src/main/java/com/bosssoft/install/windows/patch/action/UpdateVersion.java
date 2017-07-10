@@ -35,7 +35,7 @@ public class UpdateVersion implements IAction{
 		
 		logger.info("update version.....");
 		
-		String patchVersion=PatchFileManager.getPatchHome()+File.separator+"version.xml";
+		String patchVersion=PatchFileManager.getPatchVersionConf();
 		try{
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(patchVersion);
@@ -114,7 +114,7 @@ public class UpdateVersion implements IAction{
 
 	private void updateProductVersion(Element product, IContext context) {
            try {
-        	String file=PatchFileManager.getPatchProdcutVersionFile(context);
+        	String file=PatchFileManager.getPatchProdcutInfoFile(context);
    			SAXReader reader = new SAXReader();
    			Document document = reader.read(file);
    	       Node n= document.selectSingleNode("product/version");

@@ -116,10 +116,13 @@ public class BackupProduct implements IAction{
 			
 			root.add(replaceEle);
 			
+			
+			String rollbackFile=PatchFileManager.getPatchRollBackFile();
+			if(!new File(rollbackFile).exists()) PatchUtil.createFile(rollbackFile);
 			OutputFormat format =OutputFormat.createPrettyPrint(); 
 			  format.setEncoding("utf-8");//设置编码格式 
 			  format.setNewLineAfterDeclaration(false);
-	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(PatchFileManager.getPatchRollBackFile()),format);
+	       XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(rollbackFile),format);
 		    xmlWriter.write(doc);
 		    xmlWriter.close();
 		}catch(Exception e){
@@ -147,7 +150,7 @@ public class BackupProduct implements IAction{
 		//产品版本信息
 		String pv=File.separator+context.getStringValue("PRODUCT_NAME")+"_info.xml";
 		Element pe=DocumentHelper.createElement("file");
-		pe.addAttribute("dest", PatchFileManager.getPatchProdcutVersionFile(context));
+		pe.addAttribute("dest", PatchFileManager.getPatchProdcutInfoFile(context));
 		String rootDir=PatchFileManager.getPatchBackupDir(context, context.getStringValue("PRODUCT_NAME"));
 		pe.addAttribute("source", rootDir+File.separator+"version"+File.separator+pv);
 		replaceEle.add(pe);

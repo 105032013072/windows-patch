@@ -10,8 +10,9 @@ public class PatchFileManager {
 	private static String patchWordDir=setPatchWordDir();
 	private static String patchHome = setpatchHomePath();
 	private static String patchConfig=patchHome.concat("/resource_info.xml");
-    private static String  pacthTemplateDir=patchWordDir.concat(File.separator).concat("template");
-	
+    private static String pacthTemplateDir=patchWordDir.concat(File.separator).concat("template");
+	private static String patchVersionConf=patchHome.concat(File.separator).concat("version.xml");
+    
     //应用的补丁资源所在目录
     private static  String pathResourceDir=null;
    
@@ -27,7 +28,7 @@ public class PatchFileManager {
     //应用的升级记录文件
     private static String patchUpgradeFile=null;
     
-    private static String patchProdcutVersionFile=null;
+    private static String patchProdcutInfoFile=null;
     
 	private static String setpatchHomePath() {
 		
@@ -79,7 +80,7 @@ public class PatchFileManager {
 
 	
 	
-	public static String getPatchProdcutVersionFile(IContext context) {
+	public static String getPatchProdcutInfoFile(IContext context) {
 		String file=context.getStringValue("BOSSSOFT_HOME")+File.separator+context.getStringValue("PRODUCT_NAME")+"_info.xml";
 	    return file;
 	}
@@ -106,6 +107,10 @@ public class PatchFileManager {
 	
 	public static String getPatchCheckFile(){
 		return patchCheckFile;
+	}
+
+	public static String getPatchVersionConf() {
+		return patchVersionConf;
 	}
 	
 }

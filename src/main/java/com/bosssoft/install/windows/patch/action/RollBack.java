@@ -1,6 +1,7 @@
 package com.bosssoft.install.windows.patch.action;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -35,6 +36,10 @@ public class RollBack implements IAction{
 		    if(eleDelete!=null) doDelete(eleDelete);
 		    logger.info("rollback finish");
 		} catch (Exception e) {
+			Map<String,String> param=new HashMap<String, String>();
+			param.put("IS_ROLLBACK_SUCCESS", "false");
+			RecordRollBackLog backLog=new RecordRollBackLog();
+			backLog.execute(context, param);//记录应用的回滚日志
 			throw new InstallException("faild to rollback  "+e);
 		}
 		

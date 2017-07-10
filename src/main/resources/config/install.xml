@@ -117,7 +117,7 @@
 		
 		<echo message="loading update config...." />
 		<!--加载补丁配置文件-->
-		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadConfig" scale="50">
+		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadUpdateConfig" scale="50">
 		</action>
 		
 		<echo message="checking update...." />
@@ -163,13 +163,21 @@
 	              <!--记录应用的更新日志-->
 	              <echo message="record update log..." />
 				<action name="record update log"
-						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
+						     classname="com.bosssoft.install.windows.patch.action.RecordUpdateLog" />
 	</actions>
 	
 	
 	<actions id="rollback">
+	 <!--加载回滚配置文件-->
+	 <action name="init rollback config" classname="com.bosssoft.install.windows.patch.action.LoadRollbackConfig">
+	  </action>
+	
 	<echo message="rolling back....." />
 	  <action name="rolling back" classname="com.bosssoft.install.windows.patch.action.RollBack">
+	  </action>
+	  
+	   <action name="record app rollback log" classname="com.bosssoft.install.windows.patch.action.RecordRollBackLog">
+	     <parameter name="IS_ROLLBACK_SUCCESS" value="true" />
 	  </action>
 	</actions>
 </project>

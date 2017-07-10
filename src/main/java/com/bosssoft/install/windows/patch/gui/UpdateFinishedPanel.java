@@ -86,7 +86,7 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		if("true".equals(getContext().getStringValue("IS_ROLLBACK"))){
 			msg=I18nUtil.getString("FINISH.UPDATE.ROLLBACK.SHOW");
 		}else{
-			msg=I18nUtil.getString("FINISH.UPDATE.ROLLBACK.SHOW").replace("${version}", getProductVersion());
+			msg=I18nUtil.getString("FINISH.UPDATE.SUCCESS.SHOW").replace("${version}", getProductVersion());
 		}
 		return msg;
 	}
@@ -95,7 +95,7 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 	private String getProductVersion() {
 		String version=null;
 		try {
-			 String versionFile=PatchFileManager.getPatchProdcutVersionFile(getContext());
+			 String versionFile=PatchFileManager.getPatchProdcutInfoFile(getContext());
 			 SAXReader reader=new SAXReader();
 			 Document doc =reader.read(new File(versionFile));
 			 Element root=doc.getRootElement();
@@ -133,7 +133,7 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 			public void mouseReleased(MouseEvent arg0) {
 			}
 			public void mousePressed(MouseEvent arg0) {
-			    String readmePath=System.getProperty("WORKDIR")+File.separator+"logs"+File.separator+"app.log";
+			    String readmePath=getContext().getStringValue("INSTALL_LOGFILE_PATH");
 				
 			    String[] cmds = { "notepad", new File(readmePath).getPath() };
 				try {
