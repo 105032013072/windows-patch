@@ -38,9 +38,21 @@ public class LoadRollbackConfig implements IAction{
 		        String str=getDelete(eleDelete);
 		        context.setValue("DELETE_APPS", str);
 		    }
+		    
+		    String pov=getProductRollVersion(context);//获取回滚的产品版本信息
+		    context.setValue("ROLL_PRODUCt_VERSION", pov);
 		} catch (Exception e) {
 			throw new InstallException("faild to load rollback config "+e);
 		}
+	}
+
+	private String getProductRollVersion(IContext context) throws DocumentException {
+		String productName=context.getStringValue("PRODUCT_NAME");
+		String file=PatchFileManager.getPatchBackupDir(context, productName)+File.separator+"version"+File.separator+productName+"_info.xml";
+		SAXReader reader=new SAXReader();
+		Document doc=reader.read(file);
+		
+		return doc.getRootElement().elementText("version");
 	}
 
 	private String getDelete(Element eleDelete) {

@@ -10,7 +10,9 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 import org.apache.log4j.Logger;
+import org.dom4j.io.SAXReader;
 
+import com.bosssoft.install.windows.patch.util.PatchFileManager;
 import com.bosssoft.platform.installer.core.MainFrameController;
 import com.bosssoft.platform.installer.core.gui.AbstractControlPanel;
 import com.bosssoft.platform.installer.core.gui.AbstractSetupPanel;
@@ -45,7 +47,7 @@ public class RollbackFinishedPanel extends AbstractSetupPanel{
 		this.taIntroduction1.setRows(1);
 		this.taIntroduction1.setLineWrap(true);
 		this.taIntroduction1.setWrapStyleWord(true);
-		this.taIntroduction1.setBounds(new Rectangle(37, 43, 375, 41));
+		this.taIntroduction1.setBounds(new Rectangle(50, 100, 375, 41));
 		this.taIntroduction1.setEditable(false);
 		String osName = System.getProperty("os.name").toLowerCase();
 		
@@ -110,8 +112,6 @@ public class RollbackFinishedPanel extends AbstractSetupPanel{
 
 	private String getFinishLabel() {
 		String introduction = I18nUtil.getString("ROLLBACK.LABEL.FINISH");
-		//String productName = I18nUtil.getString("PRODUCT." + getContext().getStringValue("EDITION").toUpperCase());
-
 		return introduction;
 	}
 

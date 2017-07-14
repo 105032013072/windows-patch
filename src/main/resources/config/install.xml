@@ -63,50 +63,46 @@
 		<step id="03" desc="Setbosssofthome">
 			<!--<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.BossHomeChoosePanel" />-->
 			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchBossHomePanel" />
+		    <action name="reloadLog"
+				classname="com.bosssoft.install.windows.patch.action.ReloadLog" />
 		   <nextstep default="04" />
 		</step>
-		
-		<step id="04" desc="reloadLog">
-			<action name="reloadLog"
-				classname="com.bosssoft.install.windows.patch.action.ReloadLog" />
-				<nextstep default="05" />
-		</step>
 	
-		<step id="05" desc="rollbackdigest" 
+		<step id="04" desc="rollbackdigest" 
 			  interceptor="com.bosssoft.install.windows.patch.event.RollbackDigestInterceptor">
 			<gui setuppanel="com.bosssoft.install.windows.patch.gui.RollbackDigestPanel" />
-		   <nextstep default="06" />
+		   <nextstep default="05" />
 		</step>
 		
-		<step id="06" desc="ConfigDatasource"
+		<step id="05" desc="ConfigDatasource"
 			  interceptor="com.bosssoft.install.windows.patch.event.SetBossHomeInterceptor">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.ConfigDBPanel" />
 			<nextstep discriminator="${IS_UPDATE}">
-				<branch id="true" stepid="07" />
-				<branch id="false" stepid="071" />
+				<branch id="true" stepid="06" />
+				<branch id="false" stepid="061" />
 			</nextstep>
 		</step>
 		
 		
-		<step id="07" desc="Installing" auto="true">
+		<step id="06" desc="Installing" auto="true">
 			<!---<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.InstallingPanel" />-->
 			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchingPanel" />
 			<actionscall id="install" />
-			<nextstep default="08" />
+			<nextstep default="07" />
 		</step>
 		
-		<step id="071" desc="rollback" auto="true">
+		<step id="061" desc="rollback" auto="true">
 			<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchingPanel"/>
 		    <actionscall id="rollback" />
-			<nextstep default="081" />
+			<nextstep default="071" />
 		</step>
 		
-		<step id="08" desc="Finished">
+		<step id="07" desc="Finished">
 			 <!--<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchFinishedPanel" /> -->
 		  <gui setuppanel="com.bosssoft.install.windows.patch.gui.UpdateFinishedPanel" />
 		</step>
 		
-		<step id="081" desc="Finished">
+		<step id="071" desc="Finished">
 			 <!--<gui setuppanel="com.bosssoft.install.windows.patch.gui.PatchFinishedPanel" /> -->
 		  <gui setuppanel="com.bosssoft.install.windows.patch.gui.RollbackFinishedPanel" />
 		</step>
@@ -117,28 +113,28 @@
 		
 		<echo message="loading update config...." />
 		<!--加载补丁配置文件-->
-		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadUpdateConfig" scale="50">
+		<action name="Load config" classname="com.bosssoft.install.windows.patch.action.LoadUpdateConfig" scale="2">
 		</action>
 		
 		<echo message="checking update...." />
 		<!--更新检查-->
-		<action name="check update" classname="com.bosssoft.install.windows.patch.action.CheckUpdate" scale="50">
+		<action name="check update" classname="com.bosssoft.install.windows.patch.action.CheckUpdate" scale="7">
 		</action>
 		<!--更新检查通过才允许更新-->
 			<!--备份-->
 			        <echo message="backup Product....." />
 				    <action name="Backup Product"
-						classname="com.bosssoft.install.windows.patch.action.BackupProduct" >
+						classname="com.bosssoft.install.windows.patch.action.BackupProduct" scale="40">
 						<parameter name="EXTRA_FILES" value="${PRODUCT_INSTALL_DIR}/nginx-1.13.0,${PRODUCT_INSTALL_DIR}/uninstall.bat" />
 					</action>
 					<!--更新应用-->
 					<echo message="update Product....." />
 					<action name="Update Product"
-						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" />
+						classname="com.bosssoft.install.windows.patch.action.UpdateProduct" scale="35"/>
 			     
 			       <!--初始化应用配置（可选）-->
 				   <action name="Init App Config"
-						classname="com.bosssoft.install.windows.patch.action.InitAppConf" >
+						classname="com.bosssoft.install.windows.patch.action.InitAppConf" scale="5">
 				    <parameter name="INIT_FILES"  value="${INSTALL_ROOT}/Initconfig/configInit.properties"/>
 				   </action>
 				   
@@ -154,14 +150,14 @@
 			       
 			        <!--更新版本信息-->
 			            <action name="Update Version"
-						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" />
+						     classname="com.bosssoft.install.windows.patch.action.UpdateVersion" scale="2"/>
 					
 					<!--完善更新-->
 					<action name="Finished Patch..."
-						 classname="com.bosssoft.install.windows.patch.action.FinishedPatch" />	
+						 classname="com.bosssoft.install.windows.patch.action.FinishedPatch" scale="2"/>	
 	              
 	              <!--记录应用的更新日志-->
-	              <echo message="record update log..." />
+	              <echo message="record update log..." scale="2"/>
 				<action name="record update log"
 						     classname="com.bosssoft.install.windows.patch.action.RecordUpdateLog" />
 	</actions>
@@ -169,14 +165,14 @@
 	
 	<actions id="rollback">
 	 <!--加载回滚配置文件-->
-	 <action name="init rollback config" classname="com.bosssoft.install.windows.patch.action.LoadRollbackConfig">
+	 <action name="init rollback config" classname="com.bosssoft.install.windows.patch.action.LoadRollbackConfig" scale="20">
 	  </action>
 	
 	<echo message="rolling back....." />
-	  <action name="rolling back" classname="com.bosssoft.install.windows.patch.action.RollBack">
+	  <action name="rolling back" classname="com.bosssoft.install.windows.patch.action.RollBack" scale="60">
 	  </action>
 	  
-	   <action name="record app rollback log" classname="com.bosssoft.install.windows.patch.action.RecordRollBackLog">
+	   <action name="record app rollback log" classname="com.bosssoft.install.windows.patch.action.RecordRollBackLog" scale="20">
 	     <parameter name="IS_ROLLBACK_SUCCESS" value="true" />
 	  </action>
 	</actions>

@@ -65,10 +65,10 @@ public class UpdateFinishedPanel extends AbstractSetupPanel implements ActionLis
 		
 		this.finishLabel.setOpaque(false);
 		this.finishLabel.setEditable(false);
-		this.finishLabel.setBounds(new Rectangle(37, 35, 373, 33));
+		this.finishLabel.setBounds(new Rectangle(37, 43, 375, 41));
 		
 		this.labelLog.setText("查看完整的操作日志");
-		this.labelLog.setBounds(new Rectangle(330, 345, 373, 33));
+		this.labelLog.setBounds(new Rectangle(37, 300, 375, 25));
 		
 		add(this.setupPane, "Center");
 		this.setupPane.setOpaque(false);
