@@ -43,7 +43,7 @@ public class InitAppConf implements IAction{
 				String appName=p.getProperty("APP_NAME");
 				String appConfig=getServerDeployDir(context,appName)+p.getProperty("APP_CONFIG");
 				String conftemp=ExpressionParser.parseString(p.getProperty("CONFIG_TEMPLET"));
-				String tempVars=p.getProperty("TEMPLET_variables");
+				String tempVars=p.getProperty("TEMPLET_VARIABLES");
 				doinit(appConfig,conftemp,tempVars,context);//初始化应用服务器下的配置文件
 				logger.debug("Update Product: init "+appName+"config file "+appConfig);
 				
