@@ -75,7 +75,7 @@
 		</step>
 		
 		<step id="05" desc="ConfigDatasource"
-			  interceptor="com.bosssoft.install.windows.patch.event.SetBossHomeInterceptor">
+			  interceptor="com.bosssoft.install.windows.patch.event.ConfigDatasourceInterceptor">
 			<gui setuppanel="com.bosssoft.platform.installer.wizard.gui.ConfigDBPanel" />
 			<nextstep discriminator="${IS_UPDATE}">
 				<branch id="true" stepid="06" />
