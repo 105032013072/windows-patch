@@ -212,9 +212,11 @@ public class PatchBossHomePanel extends AbstractSetupPanel implements ActionList
 
 	public void initialize(String[] parameters) {
 		if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0)
-			this.tfdDir.setText(("C:\\" + InstallRuntime.INSTANCE.getContext().getStringValue("default.install.dir")).replace('/', '\\'));
+			//this.tfdDir.setText(("C:\\" + InstallRuntime.INSTANCE.getContext().getStringValue("default.install.dir")).replace('/', '\\'));
+			this.tfdDir.setText(System.getProperty("user.home") + "\\" +"bosssoft_home");
 		else
-			this.tfdDir.setText(System.getProperty("user.home") + "/" + InstallRuntime.INSTANCE.getContext().getStringValue("default.install.dir"));
+			//this.tfdDir.setText(System.getProperty("user.home") + "/" + InstallRuntime.INSTANCE.getContext().getStringValue("default.install.dir"));
+			this.tfdDir.setText(System.getProperty("user.home") + "/" +"bosssoft_home");
 	}
 
 	public void actionPerformed(ActionEvent ae) {
